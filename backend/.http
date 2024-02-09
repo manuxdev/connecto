@@ -1,1 +1,6 @@
+
+### GET ALLUSERS
 GET http://localhost:4000/users
+
+### GET ALLTWEETS
+GET http://localhost:4000/tweets

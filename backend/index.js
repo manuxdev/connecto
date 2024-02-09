@@ -1,22 +1,20 @@
-import express, { json } from 'express';
-import { userRouter } from './routes/users.js';
+import express, { json } from 'express'
+import { userRouter } from './routes/users.js'
+import { tweetRouter } from './routes/tweets.js'
+import { corsMiddleware } from './middlewares/cors.js'
 
-//json
-const app = express();
-app.use(json()); // Para poder parsear JSON en las peticiones
+const app = express()
+
+app.disable('x-powered-by')
+
+app.use(json())
 
 app.use('/users', userRouter)
+app.use('/tweets', tweetRouter)
 
-//cors
-app.use((req,res, next) =>{
-    res.setHeader('Acces-Control-Allow-Origin', '*');
-    res.setHeader('Acces-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-    res.setHeader('Acces-Control-Allow-Headers', 'Content-Type');
-    next();
-})
+app.use(corsMiddleware())
 
-// Iniciar el servidor
-const port = process.env.PORT ||   4000;
+const port = process.env.PORT || 4000
 app.listen(port, () => {
-  console.log(`Servidor corriendo en http://localhost:${port}`);
-});
+  console.log(`Servidor corriendo en http://localhost:${port}`)
+})

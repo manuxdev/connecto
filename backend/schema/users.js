@@ -1,4 +1,4 @@
-import z from 'zod';
+import z from 'zod'
 
 const userSchema = z.object({
   user_handle: z.string({
@@ -18,8 +18,8 @@ const userSchema = z.object({
   }).max(100, { message: 'Last name must be less than  100 characters' }),
   phonenumber: z.string().optional().refine(value => value && /^\d{8}$/.test(value), { message: 'Phone number must be exactly  8 digits' }),
   created_at: z.date().default(() => new Date())
-});
+})
 
-export function validateUser(object) {
-  return userSchema.safeParse(object);
+export function validateUser (object) {
+  return userSchema.safeParse(object)
 }
