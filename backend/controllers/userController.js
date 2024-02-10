@@ -1,4 +1,4 @@
-import { UserModels } from '../models/user.js'
+import { UserModels } from '../models/userModels.js'
 
 export class UserController {
   static async getAll (req, res) {
