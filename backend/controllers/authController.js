@@ -36,6 +36,7 @@ export class AuthController {
       }
       const userData = validationResult.data
       const user = await AuthModel.signup(userData)
+      console.log(`User created successfully: ${JSON.stringify(user)}`)
       res.status(200).json({ success: true, msg: `Welcome to tweeter, ${user.username}!`, user })
     } catch (error) {
       res.status(500).json({ error: error.message })

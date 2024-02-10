@@ -1,12 +1,12 @@
 export interface User {
-  user_id: string
-  user_handle: string
-  email_address: string
+  user_id?: string
+  username: string
+  email: string
   password: string
-  first_name: string
-  last_name: string
-  phonenumber?: string
-  created_at: Date
+  firstName: string
+  lastName: string
+  phoneNumber: string
+  created_at?: Date
 }
 
 export interface Tweet {
@@ -20,4 +20,9 @@ export interface Tweet {
   vide: string
   created_at: Date
   user_handle: string
+}
+
+export interface Login {
+  email: string
+  password: string
 }
