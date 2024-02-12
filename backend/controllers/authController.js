@@ -55,7 +55,7 @@ export class AuthController {
       if (!user) {
         return res.status(400).json({ success: false, msg: "This email doesn't have an account" })
       }
-      console.log(`User logged in successfully: ${JSON.stringify(user)}`)
+      // console.log(`User logged in successfully: ${JSON.stringify(user)}`)
       return res.status(200).json({ success: true, msg: `Welcome back! ${user.username}`, token: user.token, user })
     } catch (err) {
       return res.status(500).json({ success: false, msg: err.message })

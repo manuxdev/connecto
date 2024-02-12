@@ -22,17 +22,16 @@ POST http://localhost:4000/login/signup
 Content-Type: application/json
 
 {   
-    "first_name":"Manuel",
-    "email":"manuxdev1010@gmail.com",
-    "last_name":"Pantoja",  
-    "username":"manuxdev",
-    "password":"ManuxDev1*",
-    "phonenumber":"54559131",
-    
+    "first_name":"Jamaico",
+    "email":"jamaiquito@gmail.com",
+    "last_name":"Frontera",  
+    "username":"jamaiquito",
+    "password":"JamaiquinoA1*",
+    "phonenumber":"54559121"
 }
 
 
-### login prueba 
+### login prueba  
 POST  http://localhost:4000/login
 Content-Type: application/json 
 
@@ -40,3 +39,7 @@ Content-Type: application/json
     "email":"manuxdev1010@gmail.com", 
     "password":"ManuxDev1*"
 }
+
+### get username data 
+GET http://localhost:4000/profile/manuxdev
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDc3Njk5MDUsImV4cCI6MTcwNzk0MjcwNX0.mA9btxY2S8Bh7TrRPK0HvRcafwLcEkuKFkicV86vu9c
