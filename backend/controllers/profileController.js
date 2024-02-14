@@ -23,28 +23,43 @@ export class profileController {
       res.status(500).json({ success: false, msg: err.message })
     }
   }
+
+  static async likedtweets (req, res) {
+    try {
+      const { username } = req.params
+      const likedTweet = await profileModel.getLikedTweets(username)
+      return res.status(200).json({ success: true, data: likedTweet })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({ success: false, msg: err.message })
+    }
+  }
+
+  static async unsearch (req, res) {
+    try {
+      const user = req.user
+      const text = req.query.find
+
+      const data = await profileModel.unsearch(user, text)
+      return res.status(200).json({ success: true, result: data })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({ success: false, msg: err })
+    }
+  }
+  // static async follow (req, res) {
+
+  // }
+
+  // static async mynotifs (req, res) {
+
+  // }
+
+  // static async readnotif (req, res) {
+
+  // }
+
+  // static async editprofile (req, res) {
+
+// }
 }
-
-// static async likedtweets (req, res) {
-
-// }
-
-// static async mynotifs (req, res) {
-
-// }
-
-// static async unsearch (req, res) {
-
-// }
-
-// static async readnotif (req, res) {
-
-// }
-
-// static async follow (req, res) {
-
-// }
-
-// static async editprofile (req, res) {
-
-// }

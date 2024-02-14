@@ -1,22 +1,13 @@
 import pool from '../middlewares/connectiondb.js'
 
 export class profileModel {
-  // static async getUserByUsername (username) {
-  //   try {
-  //     const result = await pool.query('SELECT * FROM users WHERE username = $1;', [username])
-  //     const user = result.rows[0]
-
-  //     return user
-  //   } catch (error) {
-  //     console.error('Error fetching users:', error)
-  //     throw error // O manejar el error según sea apropiado para tu aplicación
-  //   }
-  // }
-
   static async getProfileData (username) {
     try {
       // Buscar al usuario por nombre de usuario
       const userResult = await pool.query('SELECT * FROM users WHERE username = $1;', [username])
+      if (userResult.rowCount === 0) {
+        throw new Error('User not found')
+      }
       const user = userResult.rows[0]
 
       // Buscar seguidores y seguidos
@@ -65,4 +56,134 @@ export class profileModel {
       throw error // Manejar el error según sea apropiado para tu aplicación
     }
   }
+
+  static async getLikedTweets (username) {
+    try {
+      const userResult = await pool.query('SELECT * FROM users WHERE username = $1', [username])
+      if (userResult.rowCount === 0) {
+        throw new Error('User not found')
+      }
+      const user = userResult.rows[0]
+
+      // Consulta para obtener los tweets que el usuario ha "likeado"
+      const likedTweetsResult = await pool.query(`
+        SELECT t.*, u.username, u.first_name, u.last_name
+        FROM tweets t
+        LEFT JOIN users u ON t.user_id = u.user_id
+        WHERE EXISTS (
+          SELECT   1 FROM likes l
+          WHERE l.user_id = $1 AND l.tweet_id = t.tweet_id
+        )
+        ORDER BY t.created_at DESC
+      `, [user.user_id])
+
+      // Consulta para obtener los tweets que el usuario ha marcado como favorito
+      const bookmarkedTweetsResult = await pool.query(`
+        SELECT t.*, u.username, u.first_name, u.last_name
+        FROM tweets t
+        LEFT JOIN users u ON t.user_id = u.user_id
+        WHERE EXISTS (
+          SELECT   1 FROM bookmarks b
+          WHERE b.user_id = $1 AND b.tweet_id = t.tweet_id
+        )
+        ORDER BY t.created_at DESC
+      `, [user.user_id])
+
+      // Filtrar duplicados (si un tweet fue tanto "likeado" como marcado como favorito)
+      const likedTweets = Array.from(new Set(likedTweetsResult.rows.map(tweet => tweet.tweet_id)))
+        .map(id => likedTweetsResult.rows.find(tweet => tweet.tweet_id === id))
+
+      const bookmarkedTweets = Array.from(new Set(bookmarkedTweetsResult.rows.map(tweet => tweet.tweet_id)))
+        .map(id => bookmarkedTweetsResult.rows.find(tweet => tweet.tweet_id === id))
+
+      return {
+        likedTweets,
+        bookmarkedTweets
+      }
+    } catch (error) {
+      console.error('Error fetching likedTweets data:', error)
+      throw error // Handle the error according to your application's needs
+    }
+  }
+
+  static async unsearch (user, text) {
+    try {
+      console.log('esto es', user[0].user_id)
+      if (!text) {
+        throw new Error('User name required.')
+      }
+      const queryText = `
+        SELECT user_id, username, first_name, last_name
+        FROM users
+        WHERE isSignedup = TRUE
+        AND username ILIKE $1
+        AND user_id != $2;
+      `
+      const values = [`%${text}%`, user[0].user_id]
+
+      const result = await pool.query(queryText, values)
+      return result.rows // Devuelve los usuarios encontrados
+    } catch (error) {
+      console.error('Error fetching users:', error)
+      throw error // Handle the error according to your application's needs
+    }
+  }
 }
+
+// static async getLikedTweets (username) {
+//   try {
+//     const userResult = await pool.query('SELECT * FROM users WHERE username = $1', [username])
+//     if (userResult.rowCount === 0) {
+//       throw new Error('User not found')
+//     }
+//     const user = userResult.rows[0]
+
+//     // Consulta para obtener los tweets que el usuario ha "likeado"
+//     const likedTweets = await pool.query(`
+//       SELECT t.*, u.username, u.first_name, u.last_name
+//       FROM tweets t
+//       LEFT JOIN users u ON t.user_id = u.user_id
+//       WHERE EXISTS (
+//         SELECT   1 FROM likes l
+//         WHERE l.user_id = $1 AND l.tweet_id = t.tweet_id
+//       )
+//       ORDER BY t.created_at DESC
+//     `, [user.user_id])
+
+//     // Consulta para obtener los tweets que el usuario ha marcado como favorito
+//     const bookmarkedTweets = await pool.query(`
+//       SELECT t.*, u.username, u.first_name, u.last_name
+//       FROM tweets t
+//       LEFT JOIN users u ON t.user_id = u.user_id
+//       WHERE EXISTS (
+//         SELECT   1 FROM bookmarks b
+//         WHERE b.user_id = $1 AND b.tweet_id = t.tweet_id
+//       )
+//       ORDER BY t.created_at DESC
+//     `, [user.user_id])
+
+//     // Combinar los resultados de los tweets "likeados" y marcados como favoritos
+//     const tweets = [...likedTweets.rows, ...bookmarkedTweets.rows]
+
+//     // Filtrar duplicados (si un tweet fue tanto "likeado" como marcado como favorito)
+//     const uniqueTweets = Array.from(new Set(tweets.map(tweet => tweet.tweet_id)))
+//       .map(id => tweets.find(tweet => tweet.tweet_id === id))
+
+//     // Crear arrays para el estado de "like" y marcado como favorito
+//     const likeStatus = uniqueTweets.map(tweet => tweet.user_id === user.user_id)
+//     const bookmarkStatus = uniqueTweets.map(tweet => tweet.user_id === user.user_id)
+
+//     return {
+//       success: true,
+//       tweets: uniqueTweets,
+//       liked: likeStatus,
+//       bookmarked: bookmarkStatus
+//     }
+//   } catch (error) {
+//     console.error('Error fetching likedTweets data:', error)
+//     return {
+//       success: false,
+//       msg: error.message
+//     }
+//   }
+// }
