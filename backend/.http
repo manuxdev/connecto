@@ -37,17 +37,45 @@ Content-Type: application/json
 
 {
     "email":"manuxdev1010@gmail.com", 
-    "password":"ManuxDev1*"
+    "password":"ManuxDev1*" 
 }
 
 ### get username data 
 GET http://localhost:4000/profile/manuxdev
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDc3Njk5MDUsImV4cCI6MTcwNzk0MjcwNX0.mA9btxY2S8Bh7TrRPK0HvRcafwLcEkuKFkicV86vu9c
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjI5NTgsImV4cCI6MTcwODE5NTc1OH0.NK-xKJ5RvdRSPylJRTxIDZgc7qRsS0hl9HEtvfF9wEs
 
 ### GET LIKED PROFILE
 GET http://localhost:4000/profile/liked/jamaiquito
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MDc3Njk5MDUsImV4cCI6MTcwNzk0MjcwNX0.mA9btxY2S8Bh7TrRPK0HvRcafwLcEkuKFkicV86vu9c
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjMwNjcsImV4cCI6MTcwODE5NTg2N30._VsTpJCnTVNg13BV3b1n2ipwnGjNdMMFuG8Bp6rVJlg
 
 ### Search users
-GET http://localhost:4000/profile/search?find=manuxdev1
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDc4NTQ1MjYsImV4cCI6MTcwODAyNzMyNn0.-mQR4Rx4U5GbQpPjoFUEAJk2lfWnZz1JVEC3W_qvaSM
+GET http://localhost:4000/profile/search?find=manu
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjMwNjcsImV4cCI6MTcwODE5NTg2N30._VsTpJCnTVNg13BV3b1n2ipwnGjNdMMFuG8Bp6rVJlg
+
+### Notis
+GET http://localhost:4000/profile/mynotifs
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjMwNjcsImV4cCI6MTcwODE5NTg2N30._VsTpJCnTVNg13BV3b1n2ipwnGjNdMMFuG8Bp6rVJlg
+
+
+### Notis
+PUT http://localhost:4000/profile/readnotif/1  
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjMwNjcsImV4cCI6MTcwODE5NTg2N30._VsTpJCnTVNg13BV3b1n2ipwnGjNdMMFuG8Bp6rVJlg
+
+
+### follow 
+PUT http://localhost:4000/profile/follow/manuxdev2
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjMwNjcsImV4cCI6MTcwODE5NTg2N30._VsTpJCnTVNg13BV3b1n2ipwnGjNdMMFuG8Bp6rVJlg
+
+### edit profile 
+PUT http://localhost:4000/profile/editprofile
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjMwNjcsImV4cCI6MTcwODE5NTg2N30._VsTpJCnTVNg13BV3b1n2ipwnGjNdMMFuG8Bp6rVJlg
+
+{   
+    "first_name":"Enrique",
+    "last_name":"Pastor",  
+    "password":"Enriquito1*",
+    "phonenumber":"52417423"
+}

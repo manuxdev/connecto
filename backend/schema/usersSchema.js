@@ -24,3 +24,6 @@ const userSchema = z.object({
 export function validateUser (object) {
   return userSchema.safeParse(object)
 }
+export function validateUserPartial (object) {
+  return userSchema.partial().safeParse(object)
+}

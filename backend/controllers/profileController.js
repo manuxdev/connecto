@@ -1,11 +1,5 @@
 import { profileModel } from '../models/profileModels.js'
-
-// function formatZodError (error) {
-//   return error.issues.map(issue => ({
-//     field: issue.path[0],
-//     message: issue.message
-//   }))
-// }
+import { validateUserPartial } from '../schema/usersSchema.js'
 
 export class profileController {
   static async viewprofile (req, res) {
@@ -47,19 +41,61 @@ export class profileController {
       return res.status(500).json({ success: false, msg: err })
     }
   }
-  // static async follow (req, res) {
 
-  // }
+  static async mynotifs (req, res) {
+    try {
+      const user = req.user
 
-  // static async mynotifs (req, res) {
+      const notifs = await profileModel.mynotifs(user)
+      return res.status(200).json({ success: true, notifications: notifs })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({ success: false, msg: `${err}` })
+    }
+  }
 
-  // }
+  static async readnotif (req, res) {
+    try {
+      const { notifId } = req.params
+      if (!notifId) { return res.status(400).json({ success: false, msg: 'Notification Id required.' }) }
+      const user = req.user
 
-  // static async readnotif (req, res) {
+      const result = await profileModel.readnotif(notifId, user)
+      return res.status(200).json({ success: result })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({ success: false, msg: err })
+    }
+  }
 
-  // }
+  static async follow (req, res) {
+    try {
+      const { username } = req.params
+      if (!username) {
+        return res.status(400).json({ success: false, msg: 'Username required' })
+      }
+      const user = req.user
+      if (user.username === username) { return res.status(400).json({ success: false, msg: 'Cannot Follow Yourself.' }) }
+      const followed = await profileModel.follow(username, user)
+      return res.status(200).json({ followed })
+    } catch (err) {
+      console.log(err)
+      return res.status(500).json({ success: false, msg: err })
+    }
+  }
 
-  // static async editprofile (req, res) {
+  static async editprofile (req, res) {
+    try {
+      const result = validateUserPartial(req.body)
+      const user = req.user
+      const curruser = user[0]
+      if (!result.success) return res.status(400).json({ error: JSON.parse(result.error.message) })
 
-// }
+      const updateProfile = await profileModel.update(curruser, result.data)
+      return res.status(200).json({ success: true, msg: updateProfile })
+    } catch (err) {
+      // console.log(err);
+      return res.status(500).json({ success: false, msg: err })
+    }
+  }
 }
