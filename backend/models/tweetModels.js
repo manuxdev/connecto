@@ -1,34 +1,32 @@
 import pool from '../middlewares/connectiondb.js'
 
 export class TweetModels {
-  static async getAll () {
+  static async feed (page, user) {
     try {
-      const result = await pool.query('SELECT t.*, u.username FROM tweets t JOIN users u ON t.user_id = u.user_id;')
-      const tweet = result.rows
+      const tweets = await pool.query(`
+      SELECT t.tweet_id, t.replyingto, t.tweet_text, t.image, t.video, t.num_likes, t.num_comments, u.user_id, u.username, u.email, u.first_name, u.last_name, u.phonenumber, u.isSignedup, u.created_at
+      FROM tweets t
+      LEFT JOIN users u ON t.user_id = u.user_id
+      WHERE t.isreply = false
+      ORDER BY t.created_at DESC
+      LIMIT  15 OFFSET $1;
+    `, [page * 15])
 
-      return tweet
-    } catch (error) {
-      console.error('Error fetching users:', error)
-      throw error // O manejar el error según sea apropiado para tu aplicación
-    }
-  }
+      const like = []
+      const bookmark = []
 
-  static async create ({ input }) {
-    const { user_id, tweet_text } = input
-    try {
-      const result = await pool.query(`
-        INSERT INTO tweets (user_id, tweet_text)
-        VALUES ($1, $2)
-        RETURNING tweet_id;`,
-      [user_id, tweet_text]
-      )
-      const tweetId = result.rows[0].tweet_id
-      console.log(result)
-      const tweetResult = await pool.query('SELECT * FROM tweets WHERE tweet_id = $1;', [tweetId])
-      const tweet = tweetResult.rows[0]
-      return tweet
+      for (const tweet of tweets.rows) {
+        const likedTweets = await pool.query('SELECT * FROM likes WHERE user_id = $1 AND tweet_id = $2;', [user.user_id, tweet.tweet_id])
+        const bookmarkedTweets = await pool.query('SELECT * FROM bookmarks WHERE user_id = $1 AND tweet_id = $2;', [user.user_id, tweet.tweet_id])
+
+        like.push(likedTweets.rowCount > 0)
+        bookmark.push(bookmarkedTweets.rowCount > 0)
+      }
+
+      return { success: true, tweets: tweets.rows, liked: like, bookmarked: bookmark }
     } catch (error) {
-      throw new Error('Error creating tweet')
+      console.log('Error fetching feed:', error)
+      throw error
     }
   }
 }

@@ -1,20 +1,17 @@
 import { TweetModels } from '../models/tweetModels.js'
-import { validateTweet } from '../schema/tweetsShema.js'
+// import { validateTweet } from '../schema/tweetsShema.js'
 
 export class TweetController {
-  static async getAllTweet (req, res) {
-    const tweet = await TweetModels.getAll()
-    res.json(tweet)
-  }
-
-  static async createTweet (req, res) {
-    const result = validateTweet(req.body)
-
-    if (result.error) {
-      return res.status(400).json({ error: JSON.parse(result.error.message) })
+  static async feed (req, res) {
+    try {
+      const page = req.query.page | 0
+      const user = req.user
+      const curruser = user[0]
+      const result = await TweetModels.feed(page, curruser)
+      return res.status(200).json(result)
+    } catch (err) {
+      // console.log(err);
+      return res.status(500).json({ success: false, msg: err })
     }
-    const newTweet = await TweetModels.create({ input: result.data })
-
-    res.status(201).json(newTweet)
   }
 }
