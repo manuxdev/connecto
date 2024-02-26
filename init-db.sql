@@ -1,11 +1,14 @@
 DROP EXTENSION IF EXISTS "uuid-ossp";
 CREATE EXTENSION "uuid-ossp";
 
+DROP TABLE IF EXISTS likes;
+DROP TABLE IF EXISTS followers;
+DROP TABLE IF EXISTS bookmarks;
+DROP TABLE IF EXISTS comments;
+DROP TABLE IF EXISTS notifications;
 DROP TABLE IF EXISTS tweets;
 DROP TABLE IF EXISTS users;
 
-DROP TABLE IF EXISTS likes;
-DROP TABLE IF EXISTS followers;
 
 --Create Tables
 
