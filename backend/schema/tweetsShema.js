@@ -2,9 +2,6 @@ import { z } from 'zod'
 
 const TweetSchema = z.object({
 
-  user_id: z.string({
-    required_error: 'Text is required'
-  }).uuid(),
   tweet_text: z.string({
     required_error: 'Text is required'
   }).max(200)

@@ -1,66 +1,47 @@
-
-### GET ALLUSERS
-GET http://localhost:4000/users
-
-### GET ALLTWEETS 
-GET http://localhost:4000/tweets
-
-###
-POST http://localhost:4000/tweets
-Content-Type: application/json
-
-{
-    "user_id": "dc4a86d6-31a2-47aa-82d8-b3b5d9aa72d5",
-    "tweet_text": "Hola desde input"
-}
-### login
-GET http://localhost:4000/login
-
-
 ### signup
-POST http://localhost:4000/login/signup
+POST http://localhost:4000/login/signup 
 Content-Type: application/json
 
 {   
-    "first_name":"Jamaico",
-    "email":"jamaiquito@gmail.com",
-    "last_name":"Frontera",  
-    "username":"jamaiquito",
+    "first_name":"New2",
+    "email":"user22@gmail.com",
+    "last_name":"User2",  
+    "username":"newuser2",
     "password":"JamaiquinoA1*",
-    "phonenumber":"54559121"
+    "phonenumber":"53559115"
 }
 
 
-### login prueba  
+### login
 POST  http://localhost:4000/login
 Content-Type: application/json 
 
 {
-    "email":"manuxdev1010@gmail.com", 
-    "password":"ManuxDev1*" 
+    "email":"olito@gmail.com", 
+    "password":"JamaiquinoA1*" 
 }
 
 ### get username data 
-GET http://localhost:4000/profile/manuxdev
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjI5NTgsImV4cCI6MTcwODE5NTc1OH0.NK-xKJ5RvdRSPylJRTxIDZgc7qRsS0hl9HEtvfF9wEs
+GET http://localhost:4000/profile/newuser
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI4ZGNhZTViYy1hMDZiLTRlOTItYWNlYy03OWJmZTA2ODg2NmUiLCJpYXQiOjE3MTI1NDM2OTksImV4cCI6MTcxMjcxNjQ5OX0.DlHiUkFcwMvVVGCES98eE281MgTdFiwy3HLCgNBhJEQ
 
 ### GET LIKED PROFILE
-GET http://localhost:4000/profile/liked/jamaiquito
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjMwNjcsImV4cCI6MTcwODE5NTg2N30._VsTpJCnTVNg13BV3b1n2ipwnGjNdMMFuG8Bp6rVJlg
+GET http://localhost:4000/profile/liked/manuxdev
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTI0MjIyNDIsImV4cCI6MTcxMjU5NTA0Mn0.zPyoLp2n-hQoB8M0QmpVLRrjVomaijgo9-06cIZ8Yss
 
 ### Search users
 GET http://localhost:4000/profile/search?find=manu
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjMwNjcsImV4cCI6MTcwODE5NTg2N30._VsTpJCnTVNg13BV3b1n2ipwnGjNdMMFuG8Bp6rVJlg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTI0MjIyNDIsImV4cCI6MTcxMjU5NTA0Mn0.zPyoLp2n-hQoB8M0QmpVLRrjVomaijgo9-06cIZ8Yss
 
 ### Notis
 GET http://localhost:4000/profile/mynotifs
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjMwNjcsImV4cCI6MTcwODE5NTg2N30._VsTpJCnTVNg13BV3b1n2ipwnGjNdMMFuG8Bp6rVJlg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTI0MjIyNDIsImV4cCI6MTcxMjU5NTA0Mn0.zPyoLp2n-hQoB8M0QmpVLRrjVomaijgo9-06cIZ8Yss
 
 
-### Notis
-PUT http://localhost:4000/profile/readnotif/1  
+### Notis 
+PUT http://localhost:4000/profile/readnotif/56 
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjMwNjcsImV4cCI6MTcwODE5NTg2N30._VsTpJCnTVNg13BV3b1n2ipwnGjNdMMFuG8Bp6rVJlg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTI0MjIyNDIsImV4cCI6MTcxMjU5NTA0Mn0.zPyoLp2n-hQoB8M0QmpVLRrjVomaijgo9-06cIZ8Yss
 
 
 ### follow 
@@ -71,7 +52,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkN
 ### edit profile 
 PUT http://localhost:4000/profile/editprofile
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjMwNjcsImV4cCI6MTcwODE5NTg2N30._VsTpJCnTVNg13BV3b1n2ipwnGjNdMMFuG8Bp6rVJlg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTI0MjIyNDIsImV4cCI6MTcxMjU5NTA0Mn0.zPyoLp2n-hQoB8M0QmpVLRrjVomaijgo9-06cIZ8Yss
 
 {   
     "first_name":"Enrique",
@@ -82,4 +63,83 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkN
 
 ### feed
 GET http://localhost:4000/tweets/feed
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDgwMjMwNjcsImV4cCI6MTcwODE5NTg2N30._VsTpJCnTVNg13BV3b1n2ipwnGjNdMMFuG8Bp6rVJlg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1NmM1MjMyNS00NDIxLTQxOWItYjdhYi1kMTBlZGUxOTA5YjQiLCJpYXQiOjE3MTI1MTg3NjQsImV4cCI6MTcxMjY5MTU2NH0.-LM-RMCtBcp82ccJVHXhxGV774qDcltir7X8h75MOKU
+
+### mysaved 
+GET http://localhost:4000/tweets/bookmark 
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpYXQiOjE3MTI0MjIyNDIsImV4cCI6MTcxMjU5NTA0Mn0.zPyoLp2n-hQoB8M0QmpVLRrjVomaijgo9-06cIZ8Yss
+
+### tweetByID 
+GET http://localhost:4000/tweets/tweet/1c9bc65c-51b6-4c0f-a653-4e21e60b8d62
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJkYzRhODZkNi0zMWEyLTQ3YWEtODJkOC1iM2I1ZDlhYTcyZDUiLCJpYXQiOjE3MDkwNTMyNzcsImV4cCI6MTcwOTIyNjA3N30.PU6wRtIKmmGAA8U6vEBlCIiMOSU0LFnCHMRNIU9LAmY
+
+### Create Tweet
+POST http://localhost:4000/tweets/create  
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIwMTFhM2ZlNy1jMWNlLTRhYWItYjhjMC0zNDIzYTNiN2JkZWIiLCJpYXQiOjE3MTI0MjQ5MTYsImV4cCI6MTcxMjU5NzcxNn0.KN03n133o9zE12HX-T-0y5lPN1uLsPCdHyJh6O_Ff08
+
+{
+    "tweetText":"Ahora esto es un tweet donde voy a etiquetar a @federico @olito y tambien a @manuxdev o tambien @si. #siestoesuntweet "
+}
+
+### GET TAG
+GET http://localhost:4000/tweets/tagged/elmejortweet
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIwMTFhM2ZlNy1jMWNlLTRhYWItYjhjMC0zNDIzYTNiN2JkZWIiLCJpYXQiOjE3MTI0MjQ5MTYsImV4cCI6MTcxMjU5NzcxNn0.KN03n133o9zE12HX-T-0y5lPN1uLsPCdHyJh6O_Ff08
+
+### Search TAG
+GET http://localhost:4000/tweets/tags?find=%el
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIwMTFhM2ZlNy1jMWNlLTRhYWItYjhjMC0zNDIzYTNiN2JkZWIiLCJpYXQiOjE3MTI0MjQ5MTYsImV4cCI6MTcxMjU5NzcxNn0.KN03n133o9zE12HX-T-0y5lPN1uLsPCdHyJh6O_Ff08
+
+### Treading
+GET http://localhost:4000/tweets/trending?num=1
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIwMTFhM2ZlNy1jMWNlLTRhYWItYjhjMC0zNDIzYTNiN2JkZWIiLCJpYXQiOjE3MTI0MjQ5MTYsImV4cCI6MTcxMjU5NzcxNn0.KN03n133o9zE12HX-T-0y5lPN1uLsPCdHyJh6O_Ff08
+
+### liketweet
+POST http://localhost:4000/tweets/like
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiJjODljZGExNC1hOGM0LTQwYjQtYmQ3NC1iNTZiOThjODllYzQiLCJpYXQiOjE3MTI0NTI1NDEsImV4cCI6MTcxMjYyNTM0MX0.8QkXFntu8_Q1Fd_vqbiVkr1i0luh4xeWjHy6FVC7vgA
+
+{
+    "tweetId": "11b01f0f-66ff-475c-9be8-5204c2335cfc"
+}
+
+### bookmark
+POST http://localhost:4000/tweets/bookmark
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIwMTFhM2ZlNy1jMWNlLTRhYWItYjhjMC0zNDIzYTNiN2JkZWIiLCJpYXQiOjE3MTI0MjQ5MTYsImV4cCI6MTcxMjU5NzcxNn0.KN03n133o9zE12HX-T-0y5lPN1uLsPCdHyJh6O_Ff08
+
+{
+    "tweetId": "11b01f0f-66ff-475c-9be8-5204c2335cfc"
+}
+
+### retweet
+POST http://localhost:4000/tweets/retweet
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIwMTFhM2ZlNy1jMWNlLTRhYWItYjhjMC0zNDIzYTNiN2JkZWIiLCJpYXQiOjE3MTI0MjQ5MTYsImV4cCI6MTcxMjU5NzcxNn0.KN03n133o9zE12HX-T-0y5lPN1uLsPCdHyJh6O_Ff08
+
+{
+    "tweetId": "a115f9c6-ba7c-48cb-8306-74eb54ea8dd0",
+    "text":"Este es el tweet a eliminar @federico #tweeteliminar"
+}
+
+### deleteTweet
+DELETE http://localhost:4000/tweets/delete/bdad1c2f-ef3d-44ec-827d-4d41b3a54b2f
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIwMTFhM2ZlNy1jMWNlLTRhYWItYjhjMC0zNDIzYTNiN2JkZWIiLCJpYXQiOjE3MTI0MjQ5MTYsImV4cCI6MTcxMjU5NzcxNn0.KN03n133o9zE12HX-T-0y5lPN1uLsPCdHyJh6O_Ff08
+
+### getreply
+GET  http://localhost:4000/reply/tweetreplies/a1aa837a-f6be-44fe-85e9-8c18c598a43d
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIwMTFhM2ZlNy1jMWNlLTRhYWItYjhjMC0zNDIzYTNiN2JkZWIiLCJpYXQiOjE3MTI0MjQ5MTYsImV4cCI6MTcxMjU5NzcxNn0.KN03n133o9zE12HX-T-0y5lPN1uLsPCdHyJh6O_Ff08
+
+### createReply
+POST http://localhost:4000/reply/create
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiIwMTFhM2ZlNy1jMWNlLTRhYWItYjhjMC0zNDIzYTNiN2JkZWIiLCJpYXQiOjE3MTI0MjQ5MTYsImV4cCI6MTcxMjU5NzcxNn0.KN03n133o9zE12HX-T-0y5lPN1uLsPCdHyJh6O_Ff08
+
+{
+    "tweetId": "941c43a8-a2c5-424d-971b-b5be7be4fb51",
+    "text":"Esto es un reply @federico #replytag"
+}
+
+### getFile
+GET http://localhost:4000/uploads/avatar/7564fb27-5712-4762-b893-f9b814ac12bf.webp
+

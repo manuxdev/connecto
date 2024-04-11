@@ -4,7 +4,8 @@ export const corsMiddleware = () => cors({
   origin: (origin, callback) => {
     const ACCEPTED_ORIGINS = [
       'http://localhost:3000',
-      'http://localhost:8080'
+      'http://localhost:8080',
+      'http://localhost:5173'
     ]
     if (ACCEPTED_ORIGINS.includes(origin)) {
       return callback(null, true)

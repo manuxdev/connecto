@@ -21,7 +21,7 @@ function formatZodError (error) {
 export class AuthController {
   static async home (req, res) {
     try {
-      return res.send('Welcome to twitter backend')
+      return res.send('Welcome to connecto backend')
     } catch (err) {
       return res.send(err)
     }
@@ -37,7 +37,7 @@ export class AuthController {
       const userData = validationResult.data
       const user = await AuthModel.signup(userData)
       console.log(`User created successfully: ${JSON.stringify(user)}`)
-      res.status(200).json({ success: true, msg: `Welcome to tweeter, ${user.username}!`, user })
+      res.status(200).json({ success: true, msg: `Welcome to connecto, ${user.username}!`, user })
     } catch (error) {
       res.status(500).json({ error: error.message })
     }
