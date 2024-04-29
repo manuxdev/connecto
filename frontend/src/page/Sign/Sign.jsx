@@ -17,7 +17,7 @@ const Sign = ({ setRefreshCheckLogin }) => {
     return (
         <>
             <div className="h-screen w-screen">
-                <div className="grid grid-cols-2">
+                <div className="md:grid justify-center items-center grid-cols-2">
                     <LeftComponent />
                     <RightComponent openModal={openModal}
                         setShowModal={setShowModal}
@@ -35,7 +35,7 @@ export default Sign
 
 function LeftComponent() {
     return (
-        <div className="flex flex-col justify-center items-center bg-blue-700 min-h-screen gap-y-10">
+        <div className="md:flex hidden flex-col justify-center items-center bg-blue-700 min-h-screen gap-y-10">
             <div className="flex flex-col gap-y-8 ">
                 <h2 className='text-2xl'>
                     <FontAwesomeIcon icon={faSearch} className='mr-5' />
@@ -60,11 +60,11 @@ function RightComponent({ openModal, setShowModal, setRefreshCheckLogin }) {
     return (
         <div className="flex justify-center items-center min-h-screen text-start
         animate-pulse-fade-in animate-duration-[600ms] animate-ease-out
-        ">
+        px-5">
             <div className='flex flex-col justify-center items-center'>
                 <h3 className="text-5xl font-bold text-start w-full">Logo</h3>
-                <div className='flex flex-col w-[550px] gap-y-16 pt-10'>
-                    <h2 className='text-5xl text-start'>
+                <div className='flex flex-col max-w-[550px] gap-y-16 pt-10'>
+                    <h2 className='text-5xl md:text-start '>
                         Mira lo que esta pasando en la Universidad en este momento
                     </h2>
                     <h2 className='text-xl'>

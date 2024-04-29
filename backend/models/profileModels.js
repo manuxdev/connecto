@@ -10,7 +10,7 @@ export class profileModel {
   static async getProfileData (username, curruser) {
     try {
       // Buscar al usuario por nombre de usuario
-      const userResult = await pool.query('SELECT user_id, username, first_name, last_name, email, avatar, portada, created_at, description  FROM users WHERE username = $1;', [username])
+      const userResult = await pool.query('SELECT user_id, username, first_name, last_name, email, avatar, portada, created_at, description, phonenumber FROM users WHERE username = $1;', [username])
       if (userResult.rowCount === 0) {
         throw new Error('User not found')
       }
@@ -18,14 +18,16 @@ export class profileModel {
 
       // Buscar seguidores y seguidos
       // if (curruser.username === username) {
-      const followersResult = await pool.query('SELECT f.follower_id, u.username FROM followers f JOIN users u ON f.follower_id = u.user_id WHERE following_id = $1', [user.user_id])
-      const followingResult = await pool.query('SELECT f.following_id, u.username FROM followers f JOIN users u ON f.following_id = u.user_id WHERE follower_id = $1', [user.user_id])
+      const isFollowingUser = await pool.query('SELECT * FROM followers WHERE follower_id = $1 AND following_id = $2;', [curruser.user_id, user.user_id])
+      const isUserFollowingCurruser = await pool.query('SELECT * FROM followers WHERE follower_id = $1 AND following_id = $2;', [user.user_id, curruser.user_id])
 
-      // Recopilar nombres de seguidores y seguidos
-      const followernames = followersResult.rows.map(obj => ({ id: obj.follower_id, username: obj.username }))
-      const followingnames = followingResult.rows.map(obj => ({ id: obj.following_id, username: obj.username }))
+      const isFollowing = isFollowingUser.rowCount > 0
+      const isFollowedBy = isUserFollowingCurruser.rowCount > 0
+      // // Recopilar nombres de seguidores y seguidos
+      // const followernames = followersResult.rows.map(obj => ({ id: obj.follower_id, username: obj.username }))
+      // const followingnames = followingResult.rows.map(obj => ({ id: obj.following_id, username: obj.username }))
 
-      // // Obtener la cantidad de seguidores y seguidos
+      // // // Obtener la cantidad de seguidores y seguidos
       // ?Probar devolver cantidad de follower y following
       // const followersCountResult = await pool.query('SELECT COUNT(*) FROM followers WHERE following_id = $1', [user.user_id])
       // const followingCountResult = await pool.query('SELECT COUNT(*) FROM followers WHERE follower_id = $1', [user.user_id])
@@ -34,52 +36,52 @@ export class profileModel {
       // const followersCount = followersCountResult.rows[0].count
       // const followingCount = followingCountResult.rows[0].count
 
-      // Buscar tweets del usuario
-      const tweetsResult = await pool.query(`
-      SELECT tweets.*, users.username
-      FROM tweets
-      INNER JOIN users ON tweets.user_id = users.user_id
-      WHERE tweets.user_id = $1
-      ORDER BY tweets.created_at DESC;
-    `, [user.user_id])
-      // Recopilar tweets
-      const tweets = tweetsResult.rows.map(row => ({
-        _id: row.tweet_id,
-        text: row.tweet_text,
-        likes: row.num_likes,
-        retweets: row.num_retweets,
-        comments: row.num_comments,
-        image: row.image,
-        video: row.video,
-        created_at: row.created_at,
-        isreply: row.isreply,
-        replyingto: row.replyingto,
-        original_tweet_id: row.original_tweet_id,
-        is_original: row.is_original,
-        user: {
-          _id: row.user_id,
-          name: row.first_name,
-          user_name: row.username
+      //   // Buscar tweets del usuario
+      //   const tweetsResult = await pool.query(`
+      //   SELECT tweets.*, users.username
+      //   FROM tweets
+      //   INNER JOIN users ON tweets.user_id = users.user_id
+      //   WHERE tweets.user_id = $1
+      //   ORDER BY tweets.created_at DESC;
+      // `, [user.user_id])
+      //   // Recopilar tweets
+      //   const tweets = tweetsResult.rows.map(row => ({
+      //     _id: row.tweet_id,
+      //     text: row.tweet_text,
+      //     likes: row.num_likes,
+      //     retweets: row.num_retweets,
+      //     comments: row.num_comments,
+      //     image: row.image,
+      //     video: row.video,
+      //     created_at: row.created_at,
+      //     isreply: row.isreply,
+      //     replyingto: row.replyingto,
+      //     original_tweet_id: row.original_tweet_id,
+      //     is_original: row.is_original,
+      //     user: {
+      //       _id: row.user_id,
+      //       name: row.first_name,
+      //       user_name: row.username
 
-        }
-      }))
+      //     }
+      //   }))
       const like = []
       const bookmark = []
 
-      for (const tweet of tweets) {
-        const likedTweets = await pool.query('SELECT * FROM likes WHERE user_id = $1 AND tweet_id = $2;', [user.user_id, tweet.tweet_id])
-        const bookmarkedTweets = await pool.query('SELECT * FROM bookmarks WHERE user_id = $1 AND tweet_id = $2;', [user.user_id, tweet.tweet_id])
+      // for (const tweet of tweets) {
+      //   const likedTweets = await pool.query('SELECT * FROM likes WHERE user_id = $1 AND tweet_id = $2;', [user.user_id, tweet.tweet_id])
+      //   const bookmarkedTweets = await pool.query('SELECT * FROM bookmarks WHERE user_id = $1 AND tweet_id = $2;', [user.user_id, tweet.tweet_id])
 
-        like.push(likedTweets.rowCount > 0)
-        bookmark.push(bookmarkedTweets.rowCount > 0)
-      }
+      //   like.push(likedTweets.rowCount > 0)
+      //   bookmark.push(bookmarkedTweets.rowCount > 0)
+      // }
 
       // Devolver los datos del perfil
       return {
         user,
-        followernames,
-        followingnames,
-        tweets,
+        isFollowing,
+        isFollowedBy,
+        // tweets,
         liked: like,
         bookmarked: bookmark
       }
@@ -138,22 +140,78 @@ export class profileModel {
     }
   }
 
-  static async unsearch (user, text) {
+  static async unsearch (user, text, type, page) {
     try {
-      if (!text) {
-        throw new Error('User name required.')
+      let queryText, values
+
+      const limit = 20
+      const offset = page * limit
+      const startsWithAt = text.startsWith('@')
+
+      if (type === 'new') {
+        if (startsWithAt) {
+          // Si el texto comienza con '@', busca por username
+          queryText = `
+          SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar
+          FROM users u
+          WHERE u.isSignedup = TRUE
+          AND u.user_id NOT IN (
+            SELECT following_id FROM followers WHERE follower_id = $1
+          )
+          AND u.user_id != $1
+          AND u.username ILIKE $2
+          LIMIT $3 OFFSET $4;
+          `
+          values = [user.user_id, `%${text.substring(1)}%`, limit, offset] // Elimina el '@' del texto
+        } else {
+          // Si no comienza con '@', busca por first_name y last_name
+          queryText = `
+          SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar
+          FROM users u
+          WHERE u.isSignedup = TRUE
+          AND u.user_id NOT IN (
+            SELECT following_id FROM followers WHERE follower_id = $1
+          )
+          AND u.user_id != $1
+          AND (u.first_name ILIKE $2 OR u.last_name ILIKE $2)
+          LIMIT $3 OFFSET $4;
+          `
+          values = [user.user_id, `%${text}%`, limit, offset]
+        }
+      } else if (type === 'follow') {
+        if (startsWithAt) {
+          // Si el texto comienza con '@', busca por username
+          queryText = `
+            SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar
+            FROM users u
+            JOIN followers f ON f.following_id = u.user_id
+            WHERE u.isSignedup = TRUE
+            AND f.follower_id = $1
+            AND u.user_id != $1
+            AND u.username ILIKE $2
+            LIMIT $3 OFFSET $4;
+          `
+          values = [user.user_id, `%${text.substring(1)}%`, limit, offset] // Elimina el '@' del texto
+        } else {
+          // Si no comienza con '@', busca por first_name y last_name
+          queryText = `
+            SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar
+            FROM users u
+            JOIN followers f ON f.following_id = u.user_id
+            WHERE u.isSignedup = TRUE
+            AND f.follower_id = $1
+            AND u.user_id != $1
+            AND (u.first_name ILIKE $2 OR u.last_name ILIKE $2)
+            LIMIT $3 OFFSET $4;
+          `
+          values = [user.user_id, `%${text}%`, limit, offset]
+        }
+      } else {
+        throw new Error('Invalid type')
       }
-      const queryText = `
-        SELECT user_id, username, first_name, last_name, avatar
-        FROM users
-        WHERE isSignedup = TRUE
-        AND username ILIKE $1
-        AND user_id != $2;
-      `
-      const values = [`%${text}%`, user.user_id]
 
       const result = await pool.query(queryText, values)
-      return result.rows // Devuelve los usuarios encontrados
+      return result.rows
     } catch (error) {
       console.error('Error fetching users:', error)
       throw error // Handle the error according to your application's needs
@@ -221,22 +279,62 @@ export class profileModel {
     }
   }
 
-  static async update (curruser, input, image, direccion) {
-    const { first_name: FirstName, last_name: LastName, phonenumber: phoneNumber, password } = input
-    const __filename = fileURLToPath(import.meta.url)
-    const __dirname = dirname(__filename)
-    let avatar = ''
-    let portada = ''
-    if (direccion === 'avatar') {
-      avatar = image
-    } else {
-      portada = image
-    }
+  static async update (curruser, input) {
+    const { first_name: FirstName, last_name: LastName, phonenumber: phoneNumber, password, description } = input
+    // const __filename = fileURLToPath(import.meta.url)
+    // const __dirname = dirname(__filename)
+    // let avatar = ''
+    // let portada = ''
+    // if (direccion === 'avatar') {
+    //   avatar = image
+    // } else {
+    //   portada = image
+    // }
     let encryptedPassword = null
     if (password) {
       encryptedPassword = await hash(password, 12)
     }
-    if (direccion && curruser[direccion] !== null) {
+    // if (direccion && curruser[direccion] !== null) {
+    //   const currentImagePath = path.join(__dirname, '../uploads/', curruser[direccion])
+    //   if (fs.existsSync(currentImagePath)) {
+    //     fs.unlinkSync(currentImagePath, (err) => {
+    //       if (err) console.error('Error deleting current image:', err)
+    //     })
+    //   }
+    // }
+
+    const updatedData = {
+      ...curruser,
+      first_name: FirstName || curruser.first_name,
+      last_name: LastName || curruser.last_name,
+      description: description || curruser.description,
+      // portada: portada || curruser.portada,
+      phonenumber: phoneNumber || curruser.phonenumber,
+      password: encryptedPassword || curruser.password
+    }
+
+    try {
+      const result = await pool.query(`
+         UPDATE users
+         SET first_name = $1, last_name = $2, phonenumber = $3, password = $4, description = $5
+         WHERE user_id = $6
+         RETURNING *;`,
+      [updatedData.first_name, updatedData.last_name, updatedData.phonenumber, updatedData.password, updatedData.description, curruser.user_id]
+      )
+      const updatedUser = result.rows[0]
+      // console.log(updatedUser)
+      return updatedUser
+    } catch (error) {
+      throw new Error('Error actualizando usuario')
+    }
+  }
+
+  static async upAvatar (curruser, image, direccion) {
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = dirname(__filename)
+    const avatar = image
+
+    if (direccion === 'avatar' && curruser[direccion]) {
       const currentImagePath = path.join(__dirname, '../uploads/', curruser[direccion])
       if (fs.existsSync(currentImagePath)) {
         fs.unlinkSync(currentImagePath, (err) => {
@@ -247,27 +345,139 @@ export class profileModel {
 
     const updatedData = {
       ...curruser,
-      first_name: FirstName || curruser.first_name,
-      last_name: LastName || curruser.last_name,
-      avatar: avatar || curruser.avatar,
-      portada: portada || curruser.portada,
-      phonenumber: phoneNumber || curruser.phonenumber,
-      password: encryptedPassword || curruser.password
+      avatar: avatar || curruser.avatar
     }
 
     try {
       const result = await pool.query(`
          UPDATE users
-         SET first_name = $1, last_name = $2, phonenumber = $3, password = $4, avatar = $5, portada = $6
-         WHERE user_id = $7
+         SET avatar = $1
+         WHERE user_id = $2
          RETURNING *;`,
-      [updatedData.first_name, updatedData.last_name, updatedData.phonenumber, updatedData.password, updatedData.avatar, updatedData.portada, curruser.user_id]
+      [updatedData.avatar, curruser.user_id]
       )
       const updatedUser = result.rows[0]
-      // console.log(updatedUser)
       return updatedUser
     } catch (error) {
-      throw new Error('Error actualizando usuario')
+      throw new Error('Error actualizando avatar')
+    }
+  }
+
+  static async upPortada (curruser, image, direccion) {
+    const __filename = fileURLToPath(import.meta.url)
+    const __dirname = dirname(__filename)
+    const portada = image
+
+    if (direccion === 'portada' && curruser[direccion]) {
+      const currentImagePath = path.join(__dirname, '../uploads/', curruser[direccion])
+      if (fs.existsSync(currentImagePath)) {
+        fs.unlinkSync(currentImagePath, (err) => {
+          if (err) console.error('Error deleting current image:', err)
+        })
+      }
+    }
+
+    const updatedData = {
+      ...curruser,
+      portada: portada || curruser.portada
+    }
+
+    try {
+      const result = await pool.query(`
+         UPDATE users
+         SET portada = $1
+         WHERE user_id = $2
+         RETURNING *;`,
+      [updatedData.portada, curruser.user_id]
+      )
+      const updatedUser = result.rows[0]
+      return updatedUser
+    } catch (error) {
+      throw new Error('Error actualizando portada')
+    }
+  }
+
+  static async tweets (page, curruser, username) {
+    try {
+      const userF = await pool.query('SELECT username, user_id FROM users WHERE username = $1;', [username])
+      const user = userF.rows[0]
+      const offset = page * 15
+      const tweets = await pool.query(`
+      SELECT *
+      FROM tweets
+      WHERE isreply = false AND user_id = $1
+      ORDER BY created_at DESC
+      LIMIT 15 OFFSET $2;
+    `, [user.user_id, offset])
+
+      for (const tweet of tweets.rows) {
+        const likedTweets = await pool.query('SELECT * FROM likes WHERE user_id = $1 AND tweet_id = $2;', [curruser.user_id, tweet.tweet_id])
+        const bookmarkedTweets = await pool.query('SELECT * FROM bookmarks WHERE user_id = $1 AND tweet_id = $2;', [curruser.user_id, tweet.tweet_id])
+
+        tweet.liked = likedTweets.rowCount > 0
+        tweet.bookmarked = bookmarkedTweets.rowCount > 0
+      }
+
+      return { success: true, tweets: tweets.rows }
+    } catch (error) {
+      console.log('Error fetching feed:', error)
+      throw error
     }
   }
 }
+
+// TODO Search
+// if (type === 'new') {
+//   queryText = `
+//   SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar
+//   FROM users u
+//   WHERE u.isSignedup = TRUE
+//   AND u.user_id NOT IN (
+//     SELECT following_id FROM followers WHERE follower_id = $1
+//   )
+//   LIMIT $2 OFFSET $3;
+// `
+//   values = [user.user_id, limit, offset]
+// } else if (type === 'follow') {
+//   queryText = `
+//     SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar
+//     FROM users u
+//     JOIN followers f ON f.following_id = u.user_id
+//     WHERE u.isSignedup = TRUE
+//     AND f.follower_id = $1
+//     LIMIT $2 OFFSET $3;
+//   `
+//   values = [user.user_id, limit, offset]
+// } else if (type === 'search') {
+//   // Verificar si el texto comienza con @, # o ninguno de los dos
+//   if (text.startsWith('@')) {
+//     // Buscar usuarios
+//     queryText = `
+//       SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar
+//       FROM users u
+//       WHERE u.isSignedup = TRUE
+//       AND u.username LIKE $1
+//       LIMIT $2 OFFSET $3;
+//     `
+//     values = [`%${text.slice(1)}%`, limit, offset]
+//   } else if (text.startsWith('#')) {
+//     // Buscar hashtags
+//     queryText = `
+//       SELECT t.tweet_id, t.tweet_text, t.user_id, u.username, u.first_name, u.last_name, u.avatar
+//       FROM tweets t
+//       JOIN users u ON u.user_id = t.user_id
+//       WHERE t.tweet_text LIKE $1
+//       LIMIT $2 OFFSET $3;
+//     `
+//     values = [`%${text}%`, limit, offset]
+//   } else {
+//     // Buscar en tweets_text
+//     queryText = `
+//       SELECT t.tweet_id, t.tweet_text, t.user_id, u.username, u.first_name, u.last_name, u.avatar
+//       FROM tweets t
+//       JOIN users u ON u.user_id = t.user_id
+//       WHERE t.tweet_text LIKE $1
+//       LIMIT $2 OFFSET $3;
+//     `
+//     values = [`%${text}%`, limit, offset]
+//   }

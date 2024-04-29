@@ -1,0 +1,64 @@
+import { faClose } from '@fortawesome/free-solid-svg-icons'
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import React, { useState } from 'react'
+import { createTweetApi } from '../../../api/tweet'
+import { toast } from 'react-toastify'
+
+const TweetModal = ({ title, showModal, setShowModal }) => {
+    const [message, setMessage] = useState('')
+    const maxLength = 200
+
+    if (!showModal) {
+        return null
+    }
+
+
+
+    const onSubmit = e => {
+        e.preventDefault()
+
+        if (message.length > 0 && message.length <= maxLength) {
+            createTweetApi(message).then(res => {
+                if (res?.code >= 200 && res?.code < 300) {
+                    toast.success(res.message)
+                    setShowModal(false)
+                    window.location.reload()
+                }
+            }).catch(() => {
+                toast.warning('Error enviando tweet')
+            })
+        }
+    }
+
+    return (
+        <div className='fixed z-10 inset-0 overflow-hidden '>
+            <div className="flex items-center justify-center min-h-screen">
+                <div className="fixed inset-0 transition-opacity cursor-pointer " aria-hidden="true" onClick={() => setShowModal(!showModal)}>
+                    <div className="absolute inset-0 "></div>
+                </div>
+                <div className='pt-5 inline-block bg-[#242424] rounded-lg text-left overflow-hidden shadow-xl transform transition-all align-middle 
+      animate-bounce-fade-in animate-duration-[100ms] animate-ease-out'>
+                    <header className="pb-5 border-b border-white/10  pr-40">
+                        <h4 className="text-2xl font-bold mt-1 px-4">{title}</h4>
+                        <button className='absolute top-5 right-5 block h-10 w-10 border-black/50 hover:bg-red-600/20 hover:border-red-600/20 border rounded-lg transition'
+                            onClick={() => setShowModal(!showModal)}
+                        > <FontAwesomeIcon icon={faClose} /></button>
+                    </header>
+                    <section>
+                        <form onSubmit={onSubmit}>
+                            <textarea name="tweet" rows="5" className="mt-5 block  p-2.5 w-full border-none focus:ring-0 bg-zinc-700  placeholder-gray-400 text-white  resize-none" placeholder="Escribe lo que quieras compartir ..."
+                                onChange={e => setMessage(e.target.value)}
+                            />
+                            <span className='text-sm  font-medium w-full bg-zinc-700 block pl-3 pb-4'>
+                                {message.length + ' '}<span className={`${message.length > maxLength ? 'text-red-500' : 'opacity-60'} text-sm`}> / 200</span>
+                            </span>
+                            <button className={` w-full py-2 text-xl font-bold ${message.length === 0 || message.length > maxLength ? 'bg-blue-900 text-zinc-400' : 'bg-blue-600 text-white hover:bg-blue-700 hover:text-zinc-100 transition'}`} disabled={message.length === 0 || message.length > maxLength}>Postear</button>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
+    )
+}
+
+export default TweetModal

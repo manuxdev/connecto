@@ -31,9 +31,8 @@ export class profileController {
   static async unsearch (req, res) {
     try {
       const user = req.user[0]
-      const text = req.query.find
-
-      const data = await profileModel.unsearch(user, text)
+      const { type, search, page } = req.query
+      const data = await profileModel.unsearch(user, search, type, page)
       return res.status(200).json({ success: true, result: data })
     } catch (err) {
       return res.status(500).json({ success: false, msg: err })
@@ -83,15 +82,65 @@ export class profileController {
       const result = validateUserPartial(req.body)
       const user = req.user
       const curruser = user[0]
+      // const file = req.files
+      // const direccion = Object.keys(file)[0]
+      // let image = ''
+      // if (file) {
+      //   image = await upFile(file, undefined, direccion)
+      // }
+      if (!result.success) return res.status(400).json({ error: JSON.parse(result.error.errors[0].message) })
+      const updateProfile = await profileModel.update(curruser, result.data
+        // image, direccion
+      )
+      return res.status(200).json({ success: true, msg: updateProfile })
+    } catch (err) {
+      return res.status(500).json({ success: false, msg: err })
+    }
+  }
+
+  static async upAvatar (req, res) {
+    try {
+      const user = req.user
+      const curruser = user[0]
       const file = req.files
-      const direccion = Object.keys(file)[0]
+      const direccion = 'avatar'
       let image = ''
+      if (!file) return res.status(400).json({ error: JSON.parse('No envio imagen') })
       if (file) {
         image = await upFile(file, undefined, direccion)
       }
-      if (!result.success) return res.status(400).json({ error: JSON.parse(result.error.message) })
-      const updateProfile = await profileModel.update(curruser, result.data, image, direccion)
+      const updateProfile = await profileModel.upAvatar(curruser, image, direccion)
       return res.status(200).json({ success: true, msg: updateProfile })
+    } catch (err) {
+      return res.status(500).json({ success: false, msg: err })
+    }
+  }
+
+  static async upPortada (req, res) {
+    try {
+      const user = req.user
+      const curruser = user[0]
+      const file = req.files
+      const direccion = 'portada'
+      let image = ''
+      if (!file) return res.status(400).json({ error: JSON.parse('No envio imagen') })
+      if (file) {
+        image = await upFile(file, undefined, direccion)
+      }
+      const updateProfile = await profileModel.upPortada(curruser, image, direccion)
+      return res.status(200).json({ success: true, msg: updateProfile })
+    } catch (err) {
+      return res.status(500).json({ success: false, msg: err })
+    }
+  }
+
+  static async tweets (req, res) {
+    try {
+      const { username, page } = req.query
+      const user = req.user
+      const curruser = user[0]
+      const result = await profileModel.tweets(page, curruser, username)
+      return res.status(200).json(result)
     } catch (err) {
       return res.status(500).json({ success: false, msg: err })
     }

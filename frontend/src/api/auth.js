@@ -29,7 +29,7 @@ export async function signUpApi(user) {
                     const result = await response.json();
                     resolve(result);
                 } else {
-                    resolve({ code: 404, message: 'Esta cuenta ya tiene dueño perra' });
+                    resolve({ code: 404, message: 'Esta cuenta ya tiene dueño' });
                 }
             } catch (err) {
                 reject(err);
@@ -38,7 +38,7 @@ export async function signUpApi(user) {
     });
 }
 
-export async function signInApi(user) {
+export async function signInApi(user) { 
     const url = `${API_HOST}/login/`
     const userTemp = {
         email: user.email.toLowerCase(),
@@ -56,11 +56,12 @@ export async function signInApi(user) {
         setTimeout(async () => {
             try {
                 const response = await fetch(url, params);
+                
                 if (response.status === 200) {
                     const result = await response.json();
                     resolve(result);
                 } else {
-                    resolve({ code: 404, message: 'Esta cuenta ya tiene dueño perra' });
+                    resolve({ code: 404, message: 'Error de credenciales'});
                 }
             } catch (err) {
                 reject(err);

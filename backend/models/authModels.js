@@ -22,7 +22,7 @@ export class AuthModel {
       const userClean = { ...user }
       delete userClean.password
       delete userClean.isSignedup
-      const token = sign({ user: userClean }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' })
+      const token = sign({ user: userClean }, process.env.JWT_SECRET_KEY, { expiresIn: '3d' })
       return { userClean, token }
     } catch (error) {
     // Maneja el error aquí
@@ -35,7 +35,7 @@ export class AuthModel {
     const { email, password } = userData
 
     try {
-      const query = 'SELECT user_id, username, first_name, last_name, email, avatar, portada, created_at, password, description  FROM users WHERE email = $1'
+      const query = 'SELECT user_id, username, first_name, last_name, email, avatar, portada, created_at, password, description, phonenumber  FROM users WHERE email = $1'
       const values = [email.toLowerCase()]
       const result = await pool.query(query, values)
       const user = result.rows[0]
@@ -53,7 +53,7 @@ export class AuthModel {
       const userClean = { ...user }
       delete userClean.password
       console.log(userClean)
-      const token = sign({ user: userClean }, process.env.JWT_SECRET_KEY, { expiresIn: '1d' })
+      const token = sign({ user: userClean }, process.env.JWT_SECRET_KEY, { expiresIn: '3d' })
       return { userClean, token }
     } catch (error) {
       // Maneja el error aquí

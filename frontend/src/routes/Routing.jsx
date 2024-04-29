@@ -2,9 +2,10 @@ import {
     createBrowserRouter,
     RouterProvider,
 } from "react-router-dom";
-import Home from "../page/Home/Home";
-import Error404 from "../page/Error404/Error404";
+import Home from "../page/Home";
+import Error404 from "../page/Error404";
 import User from "../page/User";
+import Users from "../page/Users";
 // import configRouting from "./configRouting";
 
 const Routing = ({ setRefreshCheckLogin }) => {
@@ -12,6 +13,10 @@ const Routing = ({ setRefreshCheckLogin }) => {
         {
             path: "/:username",
             element: <User setRefreshCheckLogin={setRefreshCheckLogin} />,
+        },
+        {
+            path: "/users",
+            element: <Users setRefreshCheckLogin={setRefreshCheckLogin} />,
         },
         {
             path: "/",

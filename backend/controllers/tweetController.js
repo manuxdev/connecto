@@ -42,29 +42,28 @@ export class TweetController {
 
   static async create (req, res) {
     try {
-      // const {
-      //   tweetText
-      // } = req.body
-      const tweetText = 'Esto es un nuevo tweet'
+      const {
+        tweetText
+      } = req.body
       const user = req.user
       const curruser = user[0]
       const validText = validateTweet({ tweet_text: tweetText })
-      const file = req.files
-      if (file) {
-        const keys = Object.keys(file)
-        const isValidKey = keys.every(key => key === 'image' || key === 'video')
-        if (!isValidKey) {
-          return res.status(400).json({ success: false, msg: `Se esta esperando una key que sea imagen o video, esta llegando ${keys.join(', ')}` })
-        }
-        const arrayImages = Array.isArray(file.image) ? file.image : [file.image]
-        const arrayVideos = Array.isArray(file.video) ? file.video : [file.video]
-        if (arrayImages && arrayVideos) {
-          const totalFiles = arrayImages.length + arrayVideos.length
-          if (totalFiles > 5) {
-            return res.status(400).json({ success: false, msg: 'El número de archivos no puede ser mayor a 5' })
-          }
-        }
-      }
+      // const file = req.files
+      // if (file) {
+      //   const keys = Object.keys(file)
+      //   const isValidKey = keys.every(key => key === 'image' || key === 'video')
+      //   if (!isValidKey) {
+      //     return res.status(400).json({ success: false, msg: `Se esta esperando una key que sea imagen o video, esta llegando ${keys.join(', ')}` })
+      //   }
+      //   const arrayImages = Array.isArray(file.image) ? file.image : [file.image]
+      //   const arrayVideos = Array.isArray(file.video) ? file.video : [file.video]
+      //   if (arrayImages && arrayVideos) {
+      //     const totalFiles = arrayImages.length + arrayVideos.length
+      //     if (totalFiles > 5) {
+      //       return res.status(400).json({ success: false, msg: 'El número de archivos no puede ser mayor a 5' })
+      //     }
+      //   }
+      // }
 
       if (!curruser) {
         return res.status(400).json({ success: false, msg: 'User not authorised' })
@@ -72,7 +71,7 @@ export class TweetController {
       if (!validText.data.tweet_text) {
         return res.status(400).json({ success: false, msg: 'Text message required' })
       }
-      const result = await TweetModels.create(curruser, validText.data.tweet_text, file)
+      const result = await TweetModels.create(curruser, validText.data.tweet_text)
       return res.status(201).json(result)
     } catch (err) {
       return res.status(500).json({ success: false, msg: err })

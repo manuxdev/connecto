@@ -1,4 +1,4 @@
-import { upFiles } from '../helpers/up_file.js'
+// import { upFiles } from '../helpers/up_file.js'
 import pool from '../middlewares/connectiondb.js'
 import notifs from '../utils/notifs.js'
 import fs from 'node:fs'
@@ -7,29 +7,34 @@ import { fileURLToPath } from 'node:url'
 
 export class TweetModels {
   // { success: true, tweets: tweets.rows, liked: like, bookmarked: bookmark }
-  static async feed (page, user) {
+  static async feed (page, curruser) {
     try {
+      const offset = page * 15
       const tweets = await pool.query(`
       SELECT t.*, u.user_id, u.username, u.email, u.first_name, u.last_name, u.avatar
       FROM tweets t
       LEFT JOIN users u ON t.user_id = u.user_id
-      WHERE t.isreply = false
-      ORDER BY t.created_at DESC
-      LIMIT  15 OFFSET $1;
-    `, [page * 15])
-
-      const like = []
-      const bookmark = []
+      WHERE t.isreply = false AND t.user_id IN (
+        SELECT following_id FROM followers WHERE follower_id = $1
+      )
+      UNION
+      SELECT t.*, u.user_id, u.username, u.email, u.first_name, u.last_name, u.avatar
+      FROM tweets t
+      LEFT JOIN users u ON t.user_id = u.user_id
+      WHERE t.user_id = $1
+      ORDER BY created_at DESC
+      LIMIT 15 OFFSET $2;
+   `, [curruser.user_id, offset])
 
       for (const tweet of tweets.rows) {
-        const likedTweets = await pool.query('SELECT * FROM likes WHERE user_id = $1 AND tweet_id = $2;', [user.user_id, tweet.tweet_id])
-        const bookmarkedTweets = await pool.query('SELECT * FROM bookmarks WHERE user_id = $1 AND tweet_id = $2;', [user.user_id, tweet.tweet_id])
+        const likedTweets = await pool.query('SELECT * FROM likes WHERE user_id = $1 AND tweet_id = $2;', [curruser.user_id, tweet.tweet_id])
+        const bookmarkedTweets = await pool.query('SELECT * FROM bookmarks WHERE user_id = $1 AND tweet_id = $2;', [curruser.user_id, tweet.tweet_id])
 
-        like.push(likedTweets.rowCount > 0)
-        bookmark.push(bookmarkedTweets.rowCount > 0)
+        tweet.liked = likedTweets.rowCount > 0
+        tweet.bookmarked = bookmarkedTweets.rowCount > 0
       }
 
-      return { success: true, tweets: tweets.rows, liked: like, bookmarked: bookmark }
+      return { tweets: tweets.rows }
     } catch (error) {
       console.log('Error fetching feed:', error)
       throw error
@@ -89,22 +94,22 @@ export class TweetModels {
   }
 
   // { success: true, msg: 'Created Tweet', id: tweet._id }
-  static async create (curruser, text, file) {
-    console.log(file)
+  static async create (curruser, text) {
     try {
-      let images = ''
-      let videos = ''
-      let direcciones
-      if (file) {
-        direcciones = Object.keys(file)
-        const validVideoExtensions = ['mp3', 'avi', 'mkv', 'mpeg', 'gift']
-        if (direcciones.includes('image')) {
-          images = await upFiles(file.image, undefined, 'images')
-        }
-        if (direcciones.includes('video')) {
-          videos = await upFiles(file.video, validVideoExtensions, 'videos')
-        }
-      }
+      // TODO crear un manejador independiente para las imagenes y videos
+      // let images = ''
+      // let videos = ''
+      // let direcciones
+      // if (file) {
+      //   direcciones = Object.keys(file)
+      //   const validVideoExtensions = ['mp3', 'avi', 'mkv', 'mpeg', 'gift']
+      //   if (direcciones.includes('image')) {
+      //     images = await upFiles(file.image, undefined, 'images')
+      //   }
+      //   if (direcciones.includes('video')) {
+      //     videos = await upFiles(file.video, validVideoExtensions, 'videos')
+      //   }
+      // }
       let tags = text.match(/(?<=[#|＃])[\w]+/gi) || []
       tags = [...new Set(tags)]
       let usernamelist = text.match(/(?<=[@])[\w]+/gi) || []
@@ -140,21 +145,21 @@ export class TweetModels {
           }
         }
       }
-      // Insertar las rutas de las imágenes y videos en tweet_media
-      for (const image of images) {
-        await pool.query(`
-          INSERT INTO tweet_media (tweet_id, image_path)
-          VALUES ($1, $2);
-        `, [tweet.tweet_id, image])
-      }
+      // TODO crear un manejador independiente para las imagenes y videos
+      // // Insertar las rutas de las imágenes y videos en tweet_media
+      // for (const image of images) {
+      //   await pool.query(`
+      //     INSERT INTO tweet_media (tweet_id, image_path)
+      //     VALUES ($1, $2);
+      //   `, [tweet.tweet_id, image])
+      // }
 
-      for (const video of videos) {
-        await pool.query(`
-          INSERT INTO tweet_media (tweet_id, video_path)
-          VALUES ($1, $2);
-        `, [tweet.tweet_id, video])
-      }
-      // TODO ver si tengo que devolver las imagenes
+      // for (const video of videos) {
+      //   await pool.query(`
+      //     INSERT INTO tweet_media (tweet_id, video_path)
+      //     VALUES ($1, $2);
+      //   `, [tweet.tweet_id, video])
+      // }
       return { success: true, msg: 'Created Tweet', tweetId: tweet.tweet_id }
     } catch (error) {
       console.log(error)
