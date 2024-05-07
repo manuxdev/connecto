@@ -132,7 +132,29 @@ const SignUpForm = ({ setShowModal, setRefreshCheckLogin }) => {
                         <label className="peer-focus:font-medium absolute text-base text-gray-500 dark:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:start-0 rtl:peer-focus:translate-x-1/4 rtl:peer-focus:left-auto peer-focus:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6">Confirma la contraseña</label>
                     </div>
                 </div>
-                <div className="flex flex-row space-x-4 justify-end mt-10">
+                <div className="flex gap-x-5">
+                    <div className="relative z-0 w-full mb-5 group">
+                        <label htmlFor="rol" className="block mb-2 text-sm font-medium ">Cual es tu rol?</label>
+                        <select id="rol" className=" mb-6 text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500">
+                            <option selected>Escoge tu rol</option>
+                            <option value="US">Estudiante</option>
+                            <option value="CA">Profesor</option>
+                        </select>
+                    </div>
+                    <div className="relative z-0 w-full mb-5 group">
+                        <label htmlFor="rol" className="block mb-2 text-sm font-medium ">Cual es tu Facultad?</label>
+                        <select id="rol" className=" mb-6 text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500">
+                            <option selected>Escoge tu Facultad</option>
+                            <option value="US">Facultad 1</option>
+                            <option value="CA">Facultad 2</option>
+                            <option value="FR">Facultad 3</option>
+                            <option value="DE">Facultad 4</option>
+                            <option value="DE">FTE</option>
+                            <option value="DE">CITEC</option>
+                        </select>
+                    </div>
+                </div>
+                <div className="flex flex-row space-x-4 justify-end mt-5">
                     <button
                         type="submit"
                         className=" inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600  font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mt-0 ml-3 w-auto text-base"

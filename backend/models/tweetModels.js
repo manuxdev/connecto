@@ -41,34 +41,39 @@ export class TweetModels {
     }
   }
 
-  // { success: true, tweets, liked: like }
+  // { success: true, tweets}
   static async mysaved (curruser) {
     const bookmarks = await pool.query(`
-    SELECT * FROM bookmarks
-    WHERE user_id = $1
-    ORDER BY created_at DESC;
+       SELECT * FROM bookmarks
+       WHERE user_id = $1
+       ORDER BY created_at DESC;
     `, [curruser.user_id])
     const bookmarked = bookmarks.rows
     const tweets = []
+
     for (const bookmark of bookmarked) {
       const tweet = await pool.query(`
-        SELECT t.*, u.first_name, u.last_name, u.username, u.avatar
-        FROM tweets t
-        JOIN users u ON t.user_id = u.user_id
-        WHERE t.tweet_id = $1;
-      `, [bookmark.tweet_id])
+         SELECT t.*, u.first_name, u.last_name, u.username, u.avatar
+         FROM tweets t
+         JOIN users u ON t.user_id = u.user_id
+         WHERE t.tweet_id = $1;
+       `, [bookmark.tweet_id])
+
       if (tweet.rowCount > 0) {
-        tweets.push(tweet.rows[0])
+        const tweetObj = tweet.rows[0]
+        // Verificar si el tweet ha sido marcado como favorito por el usuario actual
+        const bookmarkedTweets = await pool.query('SELECT * FROM bookmarks WHERE user_id = $1 AND tweet_id = $2;', [curruser.user_id, tweetObj.tweet_id])
+        tweetObj.bookmarked = bookmarkedTweets.rowCount > 0
+
+        // Verificar si el tweet ha recibido un "like" del usuario actual
+        const likedTweets = await pool.query('SELECT * FROM likes WHERE user_id = $1 AND tweet_id = $2;', [curruser.user_id, tweetObj.tweet_id])
+        tweetObj.liked = likedTweets.rowCount > 0
+
+        tweets.push(tweetObj)
       }
     }
-    const like = []
 
-    for (const tweet of tweets) {
-      const likedTweets = await pool.query('SELECT * FROM likes WHERE user_id = $1 AND tweet_id = $2;', [curruser.user_id, tweet.tweet_id])
-
-      like.push(likedTweets.rowCount > 0)
-    }
-    return { success: true, tweets, liked: like }
+    return { success: true, tweets }
   }
 
   // { success: true, tweet, liked, bookmarked }

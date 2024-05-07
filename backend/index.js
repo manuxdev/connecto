@@ -9,8 +9,10 @@ import dotenv from 'dotenv'
 import fileUpload from 'express-fileupload'
 import path, { dirname } from 'node:path'
 import { fileURLToPath } from 'url'
+
 dotenv.config()
 const app = express()
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 app.disable('x-powered-by')

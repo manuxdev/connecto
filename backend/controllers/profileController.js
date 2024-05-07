@@ -32,7 +32,20 @@ export class profileController {
     try {
       const user = req.user[0]
       const { type, search, page } = req.query
+
       const data = await profileModel.unsearch(user, search, type, page)
+      console.log(data)
+      return res.status(200).json({ success: true, result: data })
+    } catch (err) {
+      return res.status(500).json({ success: false, msg: err })
+    }
+  }
+
+  static async searchGeneral (req, res) {
+    try {
+      const user = req.user[0]
+      const { search, page } = req.query
+      const data = await profileModel.searchGeneral(user, search, page)
       return res.status(200).json({ success: true, result: data })
     } catch (err) {
       return res.status(500).json({ success: false, msg: err })

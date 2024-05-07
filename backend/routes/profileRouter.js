@@ -4,6 +4,7 @@ import { profileController } from '../controllers/profileController.js'
 export const profileRouter = Router()
 
 profileRouter.get('/search', authverifytoken, profileController.unsearch)
+profileRouter.get('/searchGeneral', authverifytoken, profileController.searchGeneral)
 profileRouter.get('/liked/:username', authverifytoken, profileController.likedtweets)
 profileRouter.get('/mynotifs', authverifytoken, profileController.mynotifs)
 profileRouter.get('/usertweets', authverifytoken, profileController.tweets)

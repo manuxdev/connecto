@@ -12,8 +12,8 @@ const BassicModal = (props) => {
                 </div>
                 <div className='sm:p-10 p-5 inline-block bg-[#242424] rounded-lg text-left overflow-hidden shadow-xl transform transition-all my-8 align-middle max-w-2xl w-full
               animate-bounce-fade-in animate-duration-[300ms] animate-ease-out'>
-                    <header className="pb-10">
-                        <h4 className="text-2xl font-bold">Logo</h4>
+                    <header className="pb-5">
+                        {/* <h4 className="text-2xl font-bold">Logo</h4> */}
                     </header>
                     <section>
                         {children}

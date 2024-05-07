@@ -23,60 +23,10 @@ export class profileModel {
 
       const isFollowing = isFollowingUser.rowCount > 0
       const isFollowedBy = isUserFollowingCurruser.rowCount > 0
-      // // Recopilar nombres de seguidores y seguidos
-      // const followernames = followersResult.rows.map(obj => ({ id: obj.follower_id, username: obj.username }))
-      // const followingnames = followingResult.rows.map(obj => ({ id: obj.following_id, username: obj.username }))
 
-      // // // Obtener la cantidad de seguidores y seguidos
-      // ?Probar devolver cantidad de follower y following
-      // const followersCountResult = await pool.query('SELECT COUNT(*) FROM followers WHERE following_id = $1', [user.user_id])
-      // const followingCountResult = await pool.query('SELECT COUNT(*) FROM followers WHERE follower_id = $1', [user.user_id])
-
-      // // Extraer el conteo de seguidores y seguidos
-      // const followersCount = followersCountResult.rows[0].count
-      // const followingCount = followingCountResult.rows[0].count
-
-      //   // Buscar tweets del usuario
-      //   const tweetsResult = await pool.query(`
-      //   SELECT tweets.*, users.username
-      //   FROM tweets
-      //   INNER JOIN users ON tweets.user_id = users.user_id
-      //   WHERE tweets.user_id = $1
-      //   ORDER BY tweets.created_at DESC;
-      // `, [user.user_id])
-      //   // Recopilar tweets
-      //   const tweets = tweetsResult.rows.map(row => ({
-      //     _id: row.tweet_id,
-      //     text: row.tweet_text,
-      //     likes: row.num_likes,
-      //     retweets: row.num_retweets,
-      //     comments: row.num_comments,
-      //     image: row.image,
-      //     video: row.video,
-      //     created_at: row.created_at,
-      //     isreply: row.isreply,
-      //     replyingto: row.replyingto,
-      //     original_tweet_id: row.original_tweet_id,
-      //     is_original: row.is_original,
-      //     user: {
-      //       _id: row.user_id,
-      //       name: row.first_name,
-      //       user_name: row.username
-
-      //     }
-      //   }))
       const like = []
       const bookmark = []
 
-      // for (const tweet of tweets) {
-      //   const likedTweets = await pool.query('SELECT * FROM likes WHERE user_id = $1 AND tweet_id = $2;', [user.user_id, tweet.tweet_id])
-      //   const bookmarkedTweets = await pool.query('SELECT * FROM bookmarks WHERE user_id = $1 AND tweet_id = $2;', [user.user_id, tweet.tweet_id])
-
-      //   like.push(likedTweets.rowCount > 0)
-      //   bookmark.push(bookmarkedTweets.rowCount > 0)
-      // }
-
-      // Devolver los datos del perfil
       return {
         user,
         isFollowing,
@@ -143,7 +93,6 @@ export class profileModel {
   static async unsearch (user, text, type, page) {
     try {
       let queryText, values
-
       const limit = 20
       const offset = page * limit
       const startsWithAt = text.startsWith('@')
@@ -214,6 +163,69 @@ export class profileModel {
       return result.rows
     } catch (error) {
       console.error('Error fetching users:', error)
+      throw error // Handle the error according to your application's needs
+    }
+  }
+
+  static async searchGeneral (curruser, text, page) {
+    try {
+      if (!text.trim()) {
+        return {
+          users: [],
+          tweets: []
+        }
+      }
+
+      const limit = 20
+      const offset = page * limit
+
+      let queryText, values
+      console.log(text)
+      // Verificar si el texto comienza con @
+      if (text.startsWith('@')) {
+        // Buscar usuarios
+        queryText = `
+           SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar
+           FROM users u
+           WHERE u.isSignedup = TRUE
+           AND u.username ILIKE $1
+           AND u.user_id != $2
+           LIMIT $3 OFFSET $4;
+         `
+        values = [`%${text.slice(1)}%`, curruser.user_id, limit, offset]
+      } else {
+        // Buscar tweets
+        queryText = `
+           SELECT t.tweet_id, t.tweet_text, t.user_id, u.username, u.first_name, u.last_name, u.avatar
+           FROM tweets t
+           JOIN users u ON u.user_id = t.user_id
+           WHERE t.tweet_text ILIKE $1
+           AND t.user_id != $2
+           LIMIT $3 OFFSET $4;
+         `
+        values = [`%${text}%`, curruser.user_id, limit, offset]
+      }
+
+      // Ejecutar la consulta
+      const result = await pool.query(queryText, values)
+
+      // Preparar la respuesta
+      let response
+      if (text.startsWith('@')) {
+        response = {
+          users: result.rows,
+          tweets: []
+        }
+      } else {
+        response = {
+          users: [],
+          tweets: result.rows
+        }
+      }
+
+      return response
+    } catch (error) {
+      console.error('Error fetching search results:', error)
       throw error // Handle the error according to your application's needs
     }
   }

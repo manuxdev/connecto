@@ -87,3 +87,20 @@ export async function editProfileApi (data){
         return err
     })
 }
+
+export async function getSearchApi(paramsUrl){
+    console.log(paramsUrl)
+    const url = `${API_HOST}/profile/searchGeneral?${paramsUrl}`
+    const params = {
+      headers:{
+          Authorization:`Bearer ${getTokenApi()}`
+      },
+  }
+  return await fetch(url, params).then(res =>{
+    return res.json()
+  }).then(result =>{
+    return result
+  }).catch(err =>{
+    return err
+  })
+}

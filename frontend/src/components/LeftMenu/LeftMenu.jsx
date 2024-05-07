@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faHome, faUser, faUsers, faPowerOff } from '@fortawesome/free-solid-svg-icons'
+import { faHome, faUser, faUsers, faPowerOff, faBookmark, faSearch } from '@fortawesome/free-solid-svg-icons'
 import { logoutApi } from "../../api/auth";
 import useAuth from '../../hooks/useAuth'
 import TweetModal from "../Modal/TweetModal";
@@ -23,10 +23,21 @@ const LeftMenu = ({ setRefreshCheckLogin }) => {
             icon: faHome
         },
         {
+            href: "/search",
+            name: "Buscar",
+            icon: faSearch
+        },
+        {
             href: "/users",
             name: "Usuarios",
             icon: faUsers
         },
+        {
+            href: "/bookmarked",
+            name: "Guardados",
+            icon: faBookmark
+        },
+
         {
             href: `/${user?.user.username}`,
             name: "Perfil",
@@ -50,8 +61,8 @@ const LeftMenu = ({ setRefreshCheckLogin }) => {
     return (
         <div className="w-full h-screen flex flex-col justify-between py-8">
             <div className="">
-                <h2 className="text-2xl font-bold px-5">Logo</h2>
-                <ul className="flex flex-col items-center gap-2 h-full mt-10">
+                <h2 className="text-2xl font-bold px-5 ">Logo</h2>
+                <ul className="flex flex-col  gap-2 h-full mt-10">
                     {navSide.map(link => (
                         <Link key={link.name} to={link.href} className={`${tag === link.href ? 'bg-slate-900' : ''}  w-full py-4  text-center text-lg font-bold hover:bg-slate-900 rounded-lg `}
                             onClick={() => {
