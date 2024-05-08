@@ -1,11 +1,10 @@
-
-version: '3.9'
+version: "3.9"
 
 services:
   frontend:
     container_name: frontend
     image: frontend
-    build: 
+    build:
       context: ./frontend
       dockerfile: frontend.dockerfile
     ports:
@@ -13,7 +12,7 @@ services:
     restart: always
     depends_on:
       - backend
-    
+
   backend:
     container_name: backend
     image: backend
@@ -22,7 +21,8 @@ services:
       dockerfile: backend.dockerfile
     ports:
       - 4000:4000
-
+    environment:
+      NODE_ENV: production
 
   db:
     container_name: connecto
@@ -39,15 +39,13 @@ services:
 
 volumes:
   pgdata: {}
-
-
 # version: '3.9'
 
 # services:
 #   frontend:
 #     container_name: frontend
 #     image: frontend
-#     build:  
+#     build:
 #       context: ./frontend
 #       dockerfile: frontend.dockerfile
 #     ports:
