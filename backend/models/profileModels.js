@@ -201,7 +201,8 @@ export class profileModel {
            JOIN users u ON u.user_id = t.user_id
            WHERE t.tweet_text ILIKE $1
            AND t.user_id != $2
-           LIMIT $3 OFFSET $4;
+           ORDER BY t.created_at DESC
+          LIMIT $3 OFFSET $4;
          `
         values = [`%${text}%`, curruser.user_id, limit, offset]
       }
@@ -217,9 +218,21 @@ export class profileModel {
           tweets: []
         }
       } else {
+        const tweetsWithMedia = await Promise.all(result.rows.map(async (tweet) => {
+          const tweetMedia = await pool.query(`
+          SELECT tm.image_path FROM tweet_media tm JOIN tweets t ON tm.tweet_id = t.tweet_id
+          WHERE tm.tweet_id = $1;
+        `, [tweet.tweet_id])
+          return {
+            ...tweet,
+            media: tweetMedia.rows.map(row => row.image_path)
+          }
+        }))
+
         response = {
           users: [],
-          tweets: result.rows
+          tweets: tweetsWithMedia
+
         }
       }
 
@@ -428,6 +441,12 @@ export class profileModel {
 
         tweet.liked = likedTweets.rowCount > 0
         tweet.bookmarked = bookmarkedTweets.rowCount > 0
+
+        const tweetMedia = await pool.query(`
+        SELECT tm.image_path FROM tweet_media tm JOIN tweets t ON tm.tweet_id = t.tweet_id
+        WHERE  tm.tweet_id = $1;
+        `, [tweet.tweet_id])
+        tweet.media = tweetMedia.rows.map(row => row.image_path)
       }
 
       return { success: true, tweets: tweets.rows }

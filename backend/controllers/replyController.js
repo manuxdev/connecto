@@ -45,10 +45,8 @@ export class ReplyController {
       }
       const arrayImages = Array.isArray(file.image) ? file.image : [file.image]
       const arrayVideos = Array.isArray(file.video) ? file.video : [file.video]
-      console.log(arrayVideos)
       if (arrayImages && arrayVideos) {
         const totalFiles = arrayImages.length + arrayVideos.length
-        console.log(totalFiles)
         if (totalFiles > 5) {
           return res.status(400).json({ success: false, msg: 'El número de archivos no puede ser mayor a 5' })
         }

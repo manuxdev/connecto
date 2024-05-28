@@ -1,19 +1,19 @@
-import pkg from "pg";
-import { z } from "zod";
-const { Client } = pkg;
+import pkg from 'pg'
+import { z } from 'zod'
+const { Client } = pkg
 
 const pool = new Client({
-  user: "connecto",
-  host: process.env.NODE_ENV === "production" ? "db" : "localhost",
-  database: "connecto",
-  password: "conectdb",
-  port: 5432,
-});
+  user: 'connecto',
+  host: process.env.NODE_ENV === 'production' ? 'db' : 'localhost',
+  database: 'connecto',
+  password: 'conectdb',
+  port: 5432
+})
 
 pool
   .connect()
   .then(() => {
-    console.log("Connected to the database");
+    console.log('Connected to the database')
     return Promise.all([
       pool.query(
         "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'users')"
@@ -23,11 +23,11 @@ pool
       ),
       pool.query(
         "SELECT EXISTS (SELECT FROM information_schema.tables WHERE table_name = 'login')"
-      ),
-    ]);
+      )
+    ])
   })
   .then(([usersResult, tweetsResult, loginResult]) => {
-    const queries = [];
+    const queries = []
 
     if (!usersResult.rows[0].exists) {
       queries.push(
@@ -396,11 +396,11 @@ pool
         ('41b9f75a-22b0-4d85-a378-3f5c01fdbe7f', '011a3fe7-c1ce-4aab-b8c0-3423a3b7bdeb', 'New Tweet', 0, 0, 0, NULL, NULL, 'f', NULL, '2024-04-18 17:20:34.424397', NULL, 0),
         ('1932a2e2-fce7-400d-877d-8fea3f0556f3', '011a3fe7-c1ce-4aab-b8c0-3423a3b7bdeb', 'Hola', 0, 0, 0, NULL, NULL, 'f', NULL, '2024-04-19 16:13:33.870846', NULL, 0),
         ('2017ca35-d50f-4506-85f5-8745f86cf24a', '9df40028-595b-42c7-bb59-4a392ea12999', 'Esta es mi primera publicacion, venceremos', 0, 0, 0, NULL, NULL, 'f', NULL, '2024-04-19 19:39:40.390718', NULL, 0);`)
-      );
+      )
     }
 
-    return Promise.all(queries);
+    return Promise.all(queries)
   })
-  .catch((err) => console.error("Connection error", err.stack));
+  .catch((err) => console.error('Connection error', err.stack))
 
-export default pool;
+export default pool

@@ -4,6 +4,7 @@ import notifs from '../utils/notifs.js'
 import fs from 'node:fs'
 import path, { dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { upFiles } from '../helpers/up_file.js'
 
 export class TweetModels {
   // { success: true, tweets: tweets.rows, liked: like, bookmarked: bookmark }
@@ -32,6 +33,12 @@ export class TweetModels {
 
         tweet.liked = likedTweets.rowCount > 0
         tweet.bookmarked = bookmarkedTweets.rowCount > 0
+
+        const tweetMedia = await pool.query(`
+        SELECT tm.image_path FROM tweet_media tm JOIN tweets t ON tm.tweet_id = t.tweet_id
+        WHERE  tm.tweet_id = $1;
+        `, [tweet.tweet_id])
+        tweet.media = tweetMedia.rows.map(row => row.image_path)
       }
 
       return { tweets: tweets.rows }
@@ -69,10 +76,14 @@ export class TweetModels {
         const likedTweets = await pool.query('SELECT * FROM likes WHERE user_id = $1 AND tweet_id = $2;', [curruser.user_id, tweetObj.tweet_id])
         tweetObj.liked = likedTweets.rowCount > 0
 
+        const tweetMedia = await pool.query(`
+        SELECT tm.image_path FROM tweet_media tm JOIN tweets t ON tm.tweet_id = t.tweet_id
+        WHERE  tm.tweet_id = $1;
+        `, [bookmark.tweet_id])
+        tweetObj.media = tweetMedia.rows.map(row => row.image_path)
         tweets.push(tweetObj)
       }
     }
-
     return { success: true, tweets }
   }
 
@@ -92,6 +103,28 @@ export class TweetModels {
       let bookmarked = await pool.query('SELECT * FROM bookmarks WHERE user_id = $1 AND tweet_id = $2', [curruser.user_id, tweetId])
       bookmarked = !!bookmarked
       return { tweet: tweet.rows, liked, bookmarked }
+    } catch (error) {
+      console.log('Error fetching tweets:', error)
+      throw error
+    }
+  }
+
+  // { success: true, tweet, liked, bookmarked }
+  static async getComment (tweetId) {
+    try {
+      const comment = await pool.query(`
+            SELECT c.*, u.user_id, u.username, u.first_name, u.last_name, u.avatar
+            FROM comments c
+            JOIN users u ON u.user_id = c.user_id
+            WHERE c.tweet_id = $1
+            ORDER BY c.created_at DESC;
+          `, [tweetId])
+
+      // let liked = await pool.query('SELECT * FROM likes WHERE user_id = $1 AND tweet_id = $2', [curruser.user_id, tweetId])
+
+      // liked = !!liked
+
+      return { comment: comment.rows }
     } catch (error) {
       console.log('Error fetching tweets:', error)
       throw error
@@ -165,7 +198,7 @@ export class TweetModels {
       //     VALUES ($1, $2);
       //   `, [tweet.tweet_id, video])
       // }
-      return { success: true, msg: 'Created Tweet', tweetId: tweet.tweet_id }
+      return { success: true, msg: 'Publicación creada', tweetId: tweet.tweet_id }
     } catch (error) {
       console.log(error)
       throw error
@@ -291,10 +324,8 @@ export class TweetModels {
     }
   }
 
-  static async retweet (curruser, tweetId, text) {
+  static async comment (curruser, tweetId, text) {
     try {
-      let tags = text.match(/(?<=[#|＃])[\w]+/gi) || []
-      tags = [...new Set(tags)]
       let usernamelist = text.match(/(?<=[@])[\w]+/gi) || []
       usernamelist = [...new Set(usernamelist)]
       // Buscar el tweet por ID
@@ -304,55 +335,19 @@ export class TweetModels {
       if (tweet.rows.length === 0) {
         return { success: false, msg: 'Tweet Not Found by Id' }
       }
-      // TODO Ver esto despues
-      // let file = req.files ? req.files.file : null;
-      // let image = null, video = null;
-
-      // if (file) {
-      //     // Aquí se asume que tienes una función para manejar la subida de archivos a Cloudinary
-      //     // y que retorna un objeto con las URLs de la imagen y el video si corresponde
-      //     const result = await uploadToCloudinary(file.tempFilePath);
-      //     if (result.resource_type === 'video') {
-      //         video = result.secure_url;
-      //     } else {
-      //         image = result.secure_url;
-      //     }
-      // }
-
       // Insertar el retweet en la base de datos
-      const retweetResult = await pool.query(`
-      INSERT INTO tweets (user_id, tweet_text, retweet_id)
+      const commentResult = await pool.query(`
+      INSERT INTO comments (user_id, comment, tweet_id)
       VALUES ($1, $2, $3)
        RETURNING *;
       `, [curruser.user_id, text, tweetId])
-      const retweet = retweetResult.rows[0]
-      if (retweet) {
-        notifs.mentions(usernamelist, retweet.tweet_id, curruser.user_id)
-        for (const tag of tags) {
-          // Intentar encontrar la etiqueta existente
-          const result = await pool.query(`
-            SELECT * FROM tags WHERE hashtag = $1
-          `, [tag])
-
-          let created = false
-
-          // Si no se encontró la etiqueta, crear una nueva
-          if (result.rowCount === 0) {
-            await pool.query(`
-              INSERT INTO tags (hashtag) VALUES ($1) RETURNING *
-            `, [tag])
-            created = true
-          }
-          if (!created) {
-            await pool.query(`
-              UPDATE tags SET tweet_cnt = tweet_cnt +  1 WHERE hashtag = $1
-            `, [tag])
-          }
-        }
-        return { success: true, msg: 'Retweeted' }
+      const comment = commentResult.rows[0]
+      if (comment) {
+        notifs.mentions(usernamelist, comment.tweet_id, curruser.user_id)
+        return { success: true, msg: 'Comentario' }
       }
 
-      return { success: true, msg: 'Created Retweet', RetweetId: retweet.tweet_id }
+      return { success: true, msg: 'Comentario exitoso', CommentId: comment.comment_id }
     } catch (error) {
       console.log(error)
       throw error
@@ -449,6 +444,23 @@ DELETE FROM tweets WHERE retweet_id = $1;
     } catch (error) {
       console.log(error)
       throw error
+    }
+  }
+
+  static async upImageFile (file, tweetId) {
+    let images = ''
+    if (file) {
+      images = await upFiles(file, undefined, 'images')
+    }
+    try {
+      for (const image of images) {
+        await pool.query(`
+          INSERT INTO tweet_media (tweet_id, image_path)
+          VALUES ($1, $2);
+        `, [tweetId, image])
+      }
+    } catch (error) {
+      throw new Error('Error actualizando avatar')
     }
   }
 }

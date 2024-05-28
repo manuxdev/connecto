@@ -1,6 +1,7 @@
 import TweetElement from "../TweetElement"
 
 const ListTweets = ({ tweets }) => {
+    console.log(tweets)
     return (
         <div>
 

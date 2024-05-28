@@ -1,28 +1,30 @@
 import { API_HOST} from '../utils/constants'
 import { getTokenApi } from './auth'
 export async function createTweetApi(message) {
-    const url = `${API_HOST}/tweets/create`
+    const url = `${API_HOST}/tweets/create`;
     const tweetMessage = {
-        tweetText : message
-    }
+        tweetText: message
+    };
     const params = {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
-            Authorization:`Bearer ${getTokenApi()}`
+            Authorization: `Bearer ${getTokenApi()}`
         },
         body: JSON.stringify(tweetMessage)
-    }
+    };
 
-    // Introduce un retraso de 5 segundos antes de procesar la respuesta
-    return await fetch(url, params).then(res =>{
-        if (res.status >= 200 && res.status < 300) {
-          return {code:res.status, message:'Tweet Enviado'}
-        }     
-        return {code: 500, message:'Error del servidor'}
-    }).catch(err=>{
-        return err
-    })
+    try {
+        const response = await fetch(url, params);
+        if (!response.ok) {
+            throw new Error(`HTTP error status: ${response.status}`);
+        }
+        const data = await response.json();
+        return data;
+    } catch (error) {
+        console.error("Error:", error);
+        return { code: 500, message: 'Error del servidor' };
+    }
 }
 
 
@@ -110,4 +112,27 @@ export async function getMySavedTweetAPi (){
     }).catch(err =>{
         return err
     })
+}
+
+export async function uploadFileApi(files, tweetId){
+    const url = `${API_HOST}/tweets/upFile?tweetId=${tweetId}`
+    const formData = new FormData()
+    files.forEach((file) => {
+        formData.append(`image`, file);
+    });
+
+    const params = {
+      method: 'POST',
+      headers:{
+          Authorization:`Bearer ${getTokenApi()}`
+      },
+      body: formData
+  }
+  return await fetch(url, params).then(res =>{
+      return res.json()
+  }).then(result =>{
+      return result 
+  }).catch(err =>{
+      return err
+  })
 }

@@ -40,6 +40,19 @@ export class TweetController {
     }
   }
 
+  static async getComment (req, res) {
+    try {
+      // const user = req.user
+      // const curruser = user[0]
+      const { tweetId } = req.params
+      if (!tweetId) { return res.status(400).json({ success: false, msg: 'Tweet Id required' }) }
+      const result = await TweetModels.getComment(tweetId)
+      return res.status(200).json(result)
+    } catch (err) {
+      return res.status(500).json({ success: false, msg: `${err}` })
+    }
+  }
+
   static async create (req, res) {
     try {
       const {
@@ -136,7 +149,7 @@ export class TweetController {
     }
   }
 
-  static async retweet (req, res) {
+  static async comment (req, res) {
     try {
       const { tweetId, text } = req.body
 
@@ -150,7 +163,7 @@ export class TweetController {
       if (!validText) {
         return res.status(400).json({ success: false, msg: 'Text message required' })
       }
-      const result = await TweetModels.retweet(curruser, tweetId, validText)
+      const result = await TweetModels.comment(curruser, tweetId, validText)
       return res.status(200).json(result)
     } catch (err) {
       return res.status(500).json({ success: false, msg: err })
@@ -165,6 +178,29 @@ export class TweetController {
       const curruser = user[0]
       const result = await TweetModels.deltweet(curruser, tweetId)
       return res.status(200).json(result)
+    } catch (err) {
+      return res.status(500).json({ success: false, msg: err })
+    }
+  }
+
+  static async upImageFile (req, res) {
+    try {
+      const tweetId = req.query.tweetId
+      const file = req.files
+      let arrayImages = []
+      if (file) {
+        const keys = Object.keys(file)
+        const isValidKey = keys.every(key => key === 'image')
+        if (!isValidKey) {
+          return res.status(400).json({ success: false, msg: `Se esta esperando una key que sea imagen, esta llegando ${keys.join(', ')}` })
+        }
+        arrayImages = Array.isArray(file.image) ? file.image : [file.image]
+        if (arrayImages && arrayImages.length > 5) {
+          return res.status(400).json({ success: false, msg: 'El número de archivos no puede ser mayor a 5' })
+        }
+      }
+      const updateProfile = await TweetModels.upImageFile(arrayImages, tweetId)
+      return res.status(200).json({ success: true, data: updateProfile })
     } catch (err) {
       return res.status(500).json({ success: false, msg: err })
     }

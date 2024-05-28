@@ -6,6 +6,7 @@ export const authRouter = Router()
 authRouter.get('/', AuthController.home)
 authRouter.post('/signup', AuthController.signup)
 authRouter.post('/', AuthController.login)
+
 // authRouter.get('/search', authController.search)
 
 // authRouter.post('/email', authController.email)

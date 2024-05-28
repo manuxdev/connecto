@@ -13,20 +13,20 @@ function Buscar(props) {
     const [tweets, setTweets] = useState(null)
     const params = useUsersQuery(router.location)
     const [btnLoading, setBtnLoading] = useState(false)
-
+    console.log(tweets)
     useEffect(() => {
         getSearchApi(queryString.stringify(params)).then(
             res => {
-                console.log(res.result.tweets.length === 0)
+                console.log(res.result?.tweets.length === 0)
                 // Lógica para manejar usuarios
                 if (params.page == 0) {
-                    if (res.result.users.length === 0 || res.result.users.length === null) {
+                    if (res.result?.users.length === 0 || res.result.users.length === null) {
                         setUsers([])
                     } else {
                         setUsers(res.result.users)
                     }
                 } else {
-                    if (res.result.users.length === 0) {
+                    if (res.result?.users.length === 0) {
                         setBtnLoading(0)
                     } else {
                         setUsers([...users, ...res.result.users])
@@ -36,13 +36,13 @@ function Buscar(props) {
 
                 // Lógica para manejar tweets
                 if (params.page == 0) {
-                    if (res.result.tweets.length === 0 || res.result.tweets.length === null) {
+                    if (res.result?.tweets.length === 0 || res.result.tweets.length === null) {
                         setTweets([])
                     } else {
                         setTweets(res.result.tweets)
                     }
                 } else {
-                    if (res.result.tweets.length === 0) {
+                    if (res.result?.tweets.length === 0) {
                         setBtnLoading(0)
                     } else {
                         setTweets([...tweets, ...res.result.tweets])
@@ -90,7 +90,6 @@ function Buscar(props) {
             })
         })
     }
-    console.log(users)
     return (
         <BassicLayout className='buscar' title='Buscar' setRefreshCheckLogin={setRefreshCheckLogin}>
             <div className="">

@@ -61,7 +61,7 @@ const Home = ({ setRefreshCheckLogin }) => {
                                 </li>
                             ))}
                         </ul>}
-                    <div className='w-full mt-5'>
+                    <div className='w-full mt-5 text-center'>
                         {tweets && <button onClick={moreData} className='font-bold text-xl hover:text-blue-500'>
                             {!loadingTweets ? (
 

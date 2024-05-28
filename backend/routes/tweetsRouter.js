@@ -10,10 +10,11 @@ tweetsRouter.get('/tagged/:tag', authverifytoken, TweetController.tagtweet)
 tweetsRouter.get('/tags', TweetController.searchtag)
 tweetsRouter.get('/trending', TweetController.trending)
 tweetsRouter.get('/tweet/:tweetId', authverifytoken, TweetController.gettweet)
+tweetsRouter.get('/comment/:tweetId', authverifytoken, TweetController.getComment)
 
 tweetsRouter.post('/create', authverifytoken, TweetController.create)
 tweetsRouter.post('/like', authverifytoken, TweetController.liketweet)
 tweetsRouter.post('/bookmark', authverifytoken, TweetController.bookmark)
-tweetsRouter.post('/retweet', authverifytoken, TweetController.retweet)
-
+tweetsRouter.post('/comment', authverifytoken, TweetController.comment)
+tweetsRouter.post('/upFile', authverifytoken, TweetController.upImageFile)
 tweetsRouter.delete('/delete/:id', authverifytoken, TweetController.deltweet)

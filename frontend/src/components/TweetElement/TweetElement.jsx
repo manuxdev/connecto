@@ -8,11 +8,17 @@ import React, { useState } from 'react'
 import { API_HOST } from '../../utils/constants';
 import { Link } from "react-router-dom";
 import { bookmarkedTweetApi, likeTweetApi } from '../../api/tweet';
+import CommentModal from '../Modal/CommentModal';
+import ImageModal from '../Modal/ImageModal';
 const TweetElement = ({ tweet }) => {
     const [reloadLike, setReloadLike] = useState(tweet?.liked)
     const [reloadBookmark, setReloadBookmark] = useState(tweet?.bookmarked)
     const [reloadCantLike, setReloadCantLike] = useState(tweet?.num_likes)
+    const [showModal, setShowModal] = useState(false)
     const avatar = tweet?.avatar ? `${API_HOST}/uploads${tweet?.avatar}` : AvatarNotFOund;
+    const [isImageModalOpen, setIsImageModalOpen] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
+    const [selectedTweet, setSelectedTweet] = useState(null);
     const likeTweet = () => {
         likeTweetApi(tweet?.tweet_id).then(res => {
             setReloadLike(!reloadLike)
@@ -28,18 +34,14 @@ const TweetElement = ({ tweet }) => {
             setReloadBookmark(!reloadBookmark)
         })
     }
-
+    const tweetComment = () => {
+        setShowModal(!showModal)
+        setSelectedTweet(tweet?.tweet_id)
+    }
 
     return (
         <>
             <div className='flex gap-x-4 relative'>
-
-                <button onClick={bookmarkTweet} className='absolute right-5 top-2 cursor-pointer hover:animate-heartbeat'>
-                    {reloadBookmark ? (<FontAwesomeIcon icon={faBookmark} className='h-6' />)
-                        :
-                        <FontAwesomeIcon icon={bookmarkEmpty} className='h-6' />
-                    }
-                </button>
                 <Link to={`/${tweet?.username}`}>
                     {avatar ? (<img src={avatar} alt='avatar' className=' w-[50px] h-[50px] rounded-full' />)
                         :
@@ -56,27 +58,49 @@ const TweetElement = ({ tweet }) => {
                     <span className='font-medium text-sm opacity-40'><FontAwesomeIcon icon={faClock} /> {moment(tweet?.created_at).subtract(4, 'hour').fromNow()}</span>
                 </div>
             </div>
+            <div className=' w-full flex flex-wrap'>
+                {tweet?.media?.map((media, index) => (
+                    <div key={index} className={`cursor-pointer ${index === 0 ? 'w-full' : 'max-w-[33%]'}`} >
+                        <img
+                            className={`cursor-pointer ${index === 0 ? 'w-full' : 'h-28 object-cover'}`}
+                            src={`${API_HOST}/uploads${media}`}
+                            alt="Imagen"
+                            onClick={() => {
+                                setSelectedImage(`${API_HOST}/uploads${media}`);
+                                setIsImageModalOpen(true);
+                            }}
+                        />
+                    </div>
+                ))}
+            </div>
             <div className="mt-3 whitespace-pre-line bg-zinc-800 h-full py-2 px-4 rounded-lg font-medium text-start" dangerouslySetInnerHTML={{ __html: replaceURLWithHTMLLinksAndTags(tweet?.tweet_text) }} />
 
-            <div className='mt-4 flex gap-5'>
+            <div className='mt-4 flex gap-3 justify-start'>
                 <button onClick={likeTweet}>
                     <span className='font-medium text-sm' >
-                        {reloadLike ? (<FontAwesomeIcon icon={faHeart} className=' font-bold pr-2 cursor-pointer hover:animate-heartbeat text-red-600' />)
+                        {reloadLike ? (<FontAwesomeIcon icon={faHeart} className=' font-bold pr-2 h-6 cursor-pointer hover:animate-heartbeat text-red-600' />)
                             :
-                            <FontAwesomeIcon icon={heartEmpty} className=' font-bold pr-2 cursor-pointer hover:animate-heartbeat text-red-600' />
+                            <FontAwesomeIcon icon={heartEmpty} className=' font-bold h-6 pr-2 cursor-pointer hover:animate-heartbeat text-red-600' />
                         }
-                        {reloadCantLike} Me gusta
+                        {/* {reloadCantLike} */}
                     </span>
                 </button>
-                <span className='font-medium text-sm'>
-                    <FontAwesomeIcon icon={faShare} className=' font-bold pr-2 cursor-pointer hover:animate-sway' />
-                    {tweet?.num_retweets} Compartidos
-                </span>
-                <span className='font-medium text-sm'>
-                    <FontAwesomeIcon icon={faComment} className=' font-bold pr-2 cursor-pointer hover:animate-squeeze' />
-                    {tweet?.num_comments} Comentarios
-                </span>
+                <button onClick={tweetComment}>
+                    <span className='font-medium text-sm h-6' >
+                        <FontAwesomeIcon icon={faComment} className=' font-bold h-6 pr-2 cursor-pointer hover:animate-squeeze' />
+                        {/* {tweet?.num_comments} */}
+                    </span>
+                </button>
+                <button onClick={bookmarkTweet} className='cursor-pointer hover:animate-heartbeat'>
+                    {reloadBookmark ? (<FontAwesomeIcon icon={faBookmark} className='h-6' />)
+                        :
+                        <FontAwesomeIcon icon={bookmarkEmpty} className='h-6' />
+                    }
+                </button>
+
             </div>
+            <CommentModal setShowModal={setShowModal} showModal={showModal} title={'Comentarios: '} selectedTweet={selectedTweet} />
+            <ImageModal setIsImageModalOpen={setIsImageModalOpen} isImageModalOpen={isImageModalOpen} selectedImage={selectedImage} />
         </>
     )
 }

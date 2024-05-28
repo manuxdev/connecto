@@ -11,5 +11,6 @@ RUN npm install
 COPY . .
 
 EXPOSE 4000
+RUN node init-db.js
 
 CMD [ "node", "index.js" ] 
