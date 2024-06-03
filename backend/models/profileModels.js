@@ -246,10 +246,12 @@ export class profileModel {
   static async mynotifs (user) {
     try {
       const query = `
-        SELECT noti_id, n.type, n.tweetid, n.is_read, u.user_id, u.username, u.first_name, u.last_name, u.avatar
-        FROM notifications n
-        JOIN users u ON n.receiver = u.user_id
-        WHERE n.receiver = $1
+      SELECT noti_id, n.type, n.tweetid, n.is_read, u.user_id AS receiver_user_id, e.user_id AS sender_user_id, e.username AS sender_username, e.first_name AS sender_first_name,e.last_name AS sender_last_name, e.avatar AS sender_avatar
+      FROM notifications n
+      JOIN users u ON n.receiver = u.user_id
+      LEFT JOIN users e ON n.emisor = e.user_id
+      WHERE n.receiver = $1
+      ORDER BY noti_id DESC;
       `
       const values = [user.user_id]
       const result = await pool.query(query, values)
@@ -260,15 +262,15 @@ export class profileModel {
     }
   }
 
-  static async readnotif (notifId, user) {
+  static async readnotif (user) {
     try {
-      const notif = await pool.query('SELECT * FROM notifications WHERE noti_id = $1;', [notifId])
+      const notif = await pool.query('SELECT * FROM notifications WHERE receiver = $1;', [user.user_id])
       if (!notif.rowCount) throw new Error('Notification not found')
 
       if (notif.rows[0].receiver !== user.user_id) {
         throw new Error('Access Denied')
       } else {
-        await pool.query('UPDATE notifications SET is_read = true WHERE noti_id = $1;', [notifId])
+        await pool.query('UPDATE notifications SET is_read = true WHERE receiver = $1;', [user.user_id])
         return { success: true, msg: 'Read notification.' }
       }
     } catch (error) {
@@ -295,7 +297,7 @@ export class profileModel {
       } else {
         // Follow the user
         await pool.query('INSERT INTO followers (follower_id, following_id) VALUES ($1, $2);', [curruser.user_id, follower.user_id])
-        notifs.follow(user.user_id, follower.user_id, true)
+        notifs.follow(curruser.user_id, follower.user_id, true)
         return { success: true, msg: 'Followed successfully.' }
       }
     } catch (error) {

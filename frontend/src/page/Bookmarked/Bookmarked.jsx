@@ -37,7 +37,6 @@ const Bookmarked = ({ setRefreshCheckLogin }) => {
             }
         })
     }
-    console.log(tweets)
     return (
 
         <BassicLayout className='Bookmarked' setRefreshCheckLogin={setRefreshCheckLogin} >

@@ -1,6 +1,7 @@
 
 import LeftMenu from "../../components/LeftMenu/"
 import NavMenu from "../../components/NavMenu/NavMenu"
+import RightMenu from "../../components/RightMenu/RightMenu"
 
 const BassicLayout = ({ children, className, setRefreshCheckLogin }) => {
 
@@ -15,7 +16,7 @@ const BassicLayout = ({ children, className, setRefreshCheckLogin }) => {
                     {children}
                 </div>
                 <div className="sm:col-span-3 sm:grid hidden border-l border-white/20">
-                    el otro lado
+                    <RightMenu />
                 </div>
                 <footer className="sm:hidden fixed bottom-0 z-50 w-full border-t bg-[#1a1a1a] border-white/20 p-5">
                     <NavMenu setRefreshCheckLogin={setRefreshCheckLogin} />

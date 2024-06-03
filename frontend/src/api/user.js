@@ -25,7 +25,6 @@ export async function uploadBannerApi(file){
       const url = `${API_HOST}/profile/editprofile/upPortada`
       const formData = new FormData()
       formData.append('portada', file)
-      console.log(formData)
       const params = {
         method: 'PUT',
         headers:{
@@ -47,7 +46,6 @@ export async function uploadAvatarApi(file){
     const url = `${API_HOST}/profile/editprofile/upAvatar`
     const formData = new FormData()
     formData.append('avatar', file)
-    console.log(formData)
     const params = {
       method: 'PUT',
       headers:{
@@ -89,7 +87,7 @@ export async function editProfileApi (data){
 }
 
 export async function getSearchApi(paramsUrl){
-    console.log(paramsUrl)
+
     const url = `${API_HOST}/profile/searchGeneral?${paramsUrl}`
     const params = {
       headers:{

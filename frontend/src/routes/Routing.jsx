@@ -8,14 +8,20 @@ import User from "../page/User";
 import Users from "../page/Users";
 import Bookmarked from "../page/Bookmarked/Bookmarked";
 import Buscar from "../page/Buscar/Buscar";
+import Tweet from "../page/Tweet/Tweet";
 // import configRouting from "./configRouting";
 
 const Routing = ({ setRefreshCheckLogin }) => {
     const router = createBrowserRouter([
         {
+            path: "/pub/:tweetId",
+            element: <Tweet setRefreshCheckLogin={setRefreshCheckLogin} />,
+        },
+        {
             path: "/:username",
             element: <User setRefreshCheckLogin={setRefreshCheckLogin} />,
         },
+
         {
             path: "/users",
             element: <Users setRefreshCheckLogin={setRefreshCheckLogin} />,

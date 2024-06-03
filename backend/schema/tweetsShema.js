@@ -4,7 +4,7 @@ const TweetSchema = z.object({
 
   tweet_text: z.string({
     required_error: 'Text is required'
-  }).max(200)
+  }).max(400)
 
 })
 

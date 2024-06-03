@@ -13,11 +13,9 @@ function Buscar(props) {
     const [tweets, setTweets] = useState(null)
     const params = useUsersQuery(router.location)
     const [btnLoading, setBtnLoading] = useState(false)
-    console.log(tweets)
     useEffect(() => {
         getSearchApi(queryString.stringify(params)).then(
             res => {
-                console.log(res.result?.tweets.length === 0)
                 // Lógica para manejar usuarios
                 if (params.page == 0) {
                     if (res.result?.users.length === 0 || res.result.users.length === null) {

@@ -1,7 +1,5 @@
 import TweetElement from "../TweetElement"
-
 const ListTweets = ({ tweets }) => {
-    console.log(tweets)
     return (
         <div>
 
@@ -14,6 +12,7 @@ const ListTweets = ({ tweets }) => {
 
                                 <li key={index} className="md:w-[500px] w-full border border-white/20 bg-zinc-900 rounded-lg p-4 ">
                                     <TweetElement tweet={tweet} />
+
                                 </li>
                             ))
                         }

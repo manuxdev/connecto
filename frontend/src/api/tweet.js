@@ -136,3 +136,48 @@ export async function uploadFileApi(files, tweetId){
       return err
   })
 }
+
+export async function getTweetApi (tweetId) {
+    const url = `${API_HOST}/tweets/tweet/${tweetId}`
+    const params = {
+        headers:{
+            'Content-Type': 'application/json',
+                Authorization:`Bearer ${getTokenApi()}`
+        }
+    }
+    return await fetch(url, params).then(res => {
+        return res.json()
+    }).catch(err =>{
+        return err
+    })
+}
+export async function deleteTweetApi (tweetId) {
+    const url = `${API_HOST}/tweets/delete/${tweetId}`
+    const params = {
+        method: 'DELETE',
+        headers:{
+            'Content-Type': 'application/json',
+                Authorization:`Bearer ${getTokenApi()}`
+        }
+    }
+    return await fetch(url, params).then(res => {
+        return res.json()
+    }).catch(err =>{
+        return err
+    })
+}
+
+export async function getTrendingApi () {
+    const url = `${API_HOST}/tweets/trending`
+    const params = {
+        headers:{
+            'Content-Type': 'application/json',
+                Authorization:`Bearer ${getTokenApi()}`
+        }
+    }
+    return await fetch(url, params).then(res => {
+        return res.json()
+    }).catch(err =>{
+        return err
+    })
+}

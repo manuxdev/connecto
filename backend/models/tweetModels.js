@@ -97,12 +97,16 @@ export class TweetModels {
           WHERE isreply = false AND  t.tweet_id = $1;
         `, [tweetId])
 
-      let liked = await pool.query('SELECT * FROM likes WHERE user_id = $1 AND tweet_id = $2', [curruser.user_id, tweetId])
+      const liked = await pool.query('SELECT * FROM likes WHERE user_id = $1 AND tweet_id = $2', [curruser.user_id, tweetId])
+      tweet.rows[0].liked = liked.rowCount > 0
+      const bookmarked = await pool.query('SELECT * FROM bookmarks WHERE user_id = $1 AND tweet_id = $2', [curruser.user_id, tweetId])
+      tweet.rows[0].bookmarked = bookmarked.rowCount > 0
 
-      liked = !!liked
-      let bookmarked = await pool.query('SELECT * FROM bookmarks WHERE user_id = $1 AND tweet_id = $2', [curruser.user_id, tweetId])
-      bookmarked = !!bookmarked
-      return { tweet: tweet.rows, liked, bookmarked }
+      const tm = await pool.query(`
+          SELECT * FROM tweet_media WHERE tweet_id = $1;
+        `, [tweetId])
+      tweet.rows[0].media = tm.rows
+      return { tweet: tweet.rows }
     } catch (error) {
       console.log('Error fetching tweets:', error)
       throw error

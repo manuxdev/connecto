@@ -49,7 +49,7 @@ function LeftComponent() {
                 </h2>
                 <h2 className='text-2xl'>
                     <FontAwesomeIcon icon={faComment} className='mr-5' />
-                    únete a la conversación.
+                    Unete a la conversación.
                 </h2>
             </div>
         </div>
@@ -62,7 +62,7 @@ function RightComponent({ openModal, setShowModal, setRefreshCheckLogin }) {
         animate-pulse-fade-in animate-duration-[600ms] animate-ease-out
         px-5">
             <div className='flex flex-col justify-center items-center'>
-                <h3 className="text-5xl font-bold text-start w-full">Logo</h3>
+                {/* <h3 className="text-5xl font-bold text-start w-full">Logo</h3> */}
                 <div className='flex flex-col max-w-[550px] gap-y-16 pt-10'>
                     <h2 className='text-5xl md:text-start '>
                         Mira lo que esta pasando en la Universidad en este momento

@@ -10,7 +10,7 @@ profileRouter.get('/mynotifs', authverifytoken, profileController.mynotifs)
 profileRouter.get('/usertweets', authverifytoken, profileController.tweets)
 profileRouter.get('/:username', authverifytoken, profileController.viewprofile)
 
-profileRouter.put('/readnotif/:notifId', authverifytoken, profileController.readnotif)
+profileRouter.put('/readnotif', authverifytoken, profileController.readnotif)
 profileRouter.put('/follow/:username', authverifytoken, profileController.follow)
 profileRouter.put('/editprofile', authverifytoken, profileController.editprofile)
 profileRouter.put('/editprofile/upAvatar', authverifytoken, profileController.upAvatar)

@@ -1,12 +1,12 @@
-import { faClose, faPhotoFilm } from '@fortawesome/free-solid-svg-icons'
+import { faClose } from '@fortawesome/free-solid-svg-icons'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import React, { useEffect, useState } from 'react'
-import { createTweetApi } from '../../../api/tweet'
 import { toast } from 'react-toastify'
 import { createCommentApi, getCommentTweetAPi } from '../../../api/comment'
 import CommentElement from '../../CommentElement/CommentElement'
 
 const CommentModal = ({ title, showModal, setShowModal, selectedTweet }) => {
+    console.log(selectedTweet)
     const [message, setMessage] = useState('')
     const maxLength = 100
     const [isLoading, setIsLoading] = useState(false);
@@ -20,22 +20,16 @@ const CommentModal = ({ title, showModal, setShowModal, selectedTweet }) => {
                 setIsLoading(false)
             })
         }
-        console.log(comments)
-
     }, [showModal, reload])
 
     if (!showModal) {
         return null
     }
 
-
-
-
     const onSubmit = e => {
         e.preventDefault()
         if (message.length > 0 && message.length <= maxLength) {
             createCommentApi(message, selectedTweet).then(res => {
-                console.log(res)
                 if (res?.success) {
                     toast.success(res.message)
                     setReload(!reload)

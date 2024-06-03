@@ -1,21 +1,23 @@
-import moment from 'moment'
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faClock, faShare, faComment, faHeart, faBookmark } from '@fortawesome/free-solid-svg-icons'
+import { faClock, faShare, faComment, faHeart, faBookmark, faStar } from '@fortawesome/free-solid-svg-icons'
 import { faHeart as heartEmpty, faBookmark as bookmarkEmpty } from '@fortawesome/free-regular-svg-icons'
-import { replaceURLWithHTMLLinksAndTags } from '../../utils/function';
-import AvatarNotFOund from '../../assets/default.png';
+import { replaceURLWithHTMLLinksAndTags } from '../../../utils/function';
+import AvatarNotFOund from '../../../assets/default.png';
 import React, { useState } from 'react'
-import { API_HOST } from '../../utils/constants';
+import { API_HOST } from '../../../utils/constants';
 import { Link } from "react-router-dom";
-import { bookmarkedTweetApi, likeTweetApi } from '../../api/tweet';
-import CommentModal from '../Modal/CommentModal';
-import ImageModal from '../Modal/ImageModal';
-const TweetElement = ({ tweet }) => {
+import { bookmarkedTweetApi, deleteTweetApi, likeTweetApi } from '../../../api/tweet';
+import CommentModal from '../../Modal/CommentModal';
+import ImageModal from '../../Modal/ImageModal';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import moment from 'moment';
+import { toast } from 'react-toastify';
+
+const UserTweetElement = ({ tweet, user }) => {
     const [reloadLike, setReloadLike] = useState(tweet?.liked)
     const [reloadBookmark, setReloadBookmark] = useState(tweet?.bookmarked)
     const [reloadCantLike, setReloadCantLike] = useState(tweet?.num_likes)
     const [showModal, setShowModal] = useState(false)
-    const avatar = tweet?.avatar ? `${API_HOST}/uploads${tweet?.avatar}` : AvatarNotFOund;
+    const avatar = user?.avatar ? `${API_HOST}/uploads${user?.avatar}` : AvatarNotFOund;
     const [isImageModalOpen, setIsImageModalOpen] = useState(false);
     const [selectedImage, setSelectedImage] = useState(null);
     const [selectedTweet, setSelectedTweet] = useState(null);
@@ -38,25 +40,33 @@ const TweetElement = ({ tweet }) => {
         setShowModal(!showModal)
         setSelectedTweet(tweet?.tweet_id)
     }
+    const deleteTweet = () => {
+        deleteTweetApi(tweet?.tweet_id).then(() => {
+            window.location.reload()
+            toast.success('Mensaje eliminado con exito')
+        })
+    }
     return (
-        <>
-            <div className='flex gap-x-4 relative'>
-                <Link to={`/${tweet?.username}`}>
+        <>  <div className='flex justify-between items-center'>
+            <div className='flex gap-x-2 relative'>
+                <Link to={`/${user?.username}`}>
                     {avatar ? (<img src={avatar} alt='avatar' className=' w-[50px] h-[50px] rounded-full' />)
                         :
                         (<div className='w-[50px] h-[50px] rounded-full bg-blue-950'></div>)
                     }
                 </Link>
                 <div className=''>
-                    <Link to={`/${tweet?.username}`}>
-                        <h4 className='font-bold text-lg'>{tweet?.first_name} {tweet?.last_name}</h4>
+                    <Link to={`/${user?.username}`}>
+                        <h4 className='font-bold text-lg'>{user?.first_name} {user?.last_name}</h4>
                     </Link>
-                    <Link to={`/${tweet?.username}`}>
-                        <span className='font-medium text-sm opacity-40 pr-3' >@{tweet?.username}</span>
+                    <Link to={`/${user?.username}`}>
+                        <span className='font-medium text-sm opacity-40 pr-3' >@{user?.username}</span>
                     </Link>
                     <span className='font-medium text-sm opacity-40'><FontAwesomeIcon icon={faClock} /> {moment(tweet?.created_at).subtract(4, 'hour').fromNow()}</span>
                 </div>
             </div>
+            <button onClick={() => deleteTweet()}><FontAwesomeIcon icon={faStar} /></button>
+        </div>
             <Link to={`/pub/${tweet.tweet_id}`}>
 
                 <div className=' w-full flex flex-wrap'>
@@ -106,4 +116,5 @@ const TweetElement = ({ tweet }) => {
     )
 }
 
-export default TweetElement
+
+export default UserTweetElement

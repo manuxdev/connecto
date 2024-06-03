@@ -8,7 +8,7 @@ import { useDropzone } from 'react-dropzone'
 
 const TweetModal = ({ title, showModal, setShowModal }) => {
     const [message, setMessage] = useState('')
-    const maxLength = 200
+    const maxLength = 400
     const [imageFile, setImageFile] = useState([])
     const [imageUrl, setImageUrl] = useState([])
     const [showImageSection, setshowImageSection] = useState(false)
@@ -56,9 +56,7 @@ const TweetModal = ({ title, showModal, setShowModal }) => {
 
             createTweetApi(message).then(res => {
                 if (res?.success) {
-                    console.log(res)
                     toast.success(res.msg)
-                    console.log(imageFile, res.tweetId)
                     uploadFileApi(imageFile, res.tweetId).catch(() => {
                         toast.error('Error al subir la nueva portada')
                     })
@@ -93,7 +91,7 @@ const TweetModal = ({ title, showModal, setShowModal }) => {
                             />
                             <div className="flex px-3 pb-2 bg-zinc-700">
                                 <span className='text-sm  font-medium w-full bg-zinc-700 block pl-3 pb-2'>
-                                    {message.length + ' '}<span className={`${message.length > maxLength ? 'text-red-500' : 'opacity-60'} text-sm`}> / 200</span>
+                                    {message.length + ' '}<span className={`${message.length > maxLength ? 'text-red-500' : 'opacity-60'} text-sm`}> / 400</span>
                                 </span>
                                 <div className="flex gap-5 bg-zinc-700 ">
                                     <button onClick={() => setshowImageSection(!showImageSection)}>

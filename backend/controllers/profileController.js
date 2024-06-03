@@ -34,7 +34,6 @@ export class profileController {
       const { type, search, page } = req.query
 
       const data = await profileModel.unsearch(user, search, type, page)
-      console.log(data)
       return res.status(200).json({ success: true, result: data })
     } catch (err) {
       return res.status(500).json({ success: false, msg: err })
@@ -65,10 +64,10 @@ export class profileController {
 
   static async readnotif (req, res) {
     try {
-      const { notifId } = req.params
-      if (!notifId) { return res.status(400).json({ success: false, msg: 'Notification Id required.' }) }
+      // const { notifId } = req.params
+      // if (!notifId) { return res.status(400).json({ success: false, msg: 'Notification Id required.' }) }
       const curruser = req.user[0]
-      const result = await profileModel.readnotif(notifId, curruser)
+      const result = await profileModel.readnotif(curruser)
       return res.status(200).json({ success: result })
     } catch (err) {
       return res.status(500).json({ success: false, msg: err })

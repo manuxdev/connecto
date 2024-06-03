@@ -1,6 +1,6 @@
 import UserElement from "../UserElement/";
 const ListUsers = ({ users }) => {
-    console.log(users)
+
     return (
         <div>
 
