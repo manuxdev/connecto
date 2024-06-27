@@ -16,8 +16,8 @@ export class AuthModel {
       const encryptedPassword = await hash(userData.password, 12)
 
       // Insertar el nuevo usuario en la base de datos
-      const result = await pool.query('INSERT INTO users (email, first_name, last_name, username , phonenumber, password, issignedup) VALUES ($1, $2, $3, $4,$5,$6,$7) RETURNING *',
-        [userData.email, userData.first_name, userData.last_name, userData.username.toLowerCase(), userData.phonenumber, encryptedPassword, true])
+      const result = await pool.query('INSERT INTO users (email, first_name, last_name, username , phonenumber, password, issignedup, role, facultad) VALUES ($1, $2, $3, $4,$5,$6,$7,$8,$9) RETURNING *',
+        [userData.email, userData.first_name, userData.last_name, userData.username.toLowerCase(), userData.phonenumber, encryptedPassword, true, userData.role, userData.facultad])
       const user = result.rows[0]
       const userClean = { ...user }
       delete userClean.password
@@ -35,7 +35,7 @@ export class AuthModel {
     const { email, password } = userData
 
     try {
-      const query = 'SELECT user_id, username, first_name, last_name, email, avatar, portada, created_at, password, description, phonenumber  FROM users WHERE email = $1'
+      const query = 'SELECT user_id, username, first_name, last_name, email, avatar, portada, created_at, password, description, phonenumber, role, facultad  FROM users WHERE email = $1'
       const values = [email.toLowerCase()]
       const result = await pool.query(query, values)
       const user = result.rows[0]

@@ -1,4 +1,4 @@
-import { faClock, faShare, faComment, faHeart, faBookmark, faStar } from '@fortawesome/free-solid-svg-icons'
+import { faClock, faShare, faComment, faHeart, faBookmark, faStar, faTrash } from '@fortawesome/free-solid-svg-icons'
 import { faHeart as heartEmpty, faBookmark as bookmarkEmpty } from '@fortawesome/free-regular-svg-icons'
 import { replaceURLWithHTMLLinksAndTags } from '../../../utils/function';
 import AvatarNotFOund from '../../../assets/default.png';
@@ -57,15 +57,22 @@ const UserTweetElement = ({ tweet, user }) => {
                 </Link>
                 <div className=''>
                     <Link to={`/${user?.username}`}>
-                        <h4 className='font-bold text-lg'>{user?.first_name} {user?.last_name}</h4>
+                        <h4 className='font-bold text-lg text-start'>{user?.first_name} {user?.last_name}</h4>
                     </Link>
                     <Link to={`/${user?.username}`}>
                         <span className='font-medium text-sm opacity-40 pr-3' >@{user?.username}</span>
                     </Link>
                     <span className='font-medium text-sm opacity-40'><FontAwesomeIcon icon={faClock} /> {moment(tweet?.created_at).subtract(4, 'hour').fromNow()}</span>
+                    {user?.role === 'Profesor' ?
+                        (<span className='font-medium text-sm bg-green-500 ml-2 px-1 rounded-lg'>{user?.role}</span>)
+                        :
+                        (
+                            <span className='font-medium text-sm bg-blue-500 ml-2 px-1 rounded-lg'>{user?.role}</span>
+                        )
+                    }
                 </div>
             </div>
-            <button onClick={() => deleteTweet()}><FontAwesomeIcon icon={faStar} /></button>
+            <button onClick={() => deleteTweet()}><FontAwesomeIcon icon={faTrash} className='text-red-500' /></button>
         </div>
             <Link to={`/pub/${tweet.tweet_id}`}>
 

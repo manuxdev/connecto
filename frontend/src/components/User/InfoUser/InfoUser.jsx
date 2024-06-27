@@ -15,11 +15,11 @@ const InfoUser = ({ user }) => {
             <div className="flex sm:gap-x-10 gap-x-5 gap-y-2 flex-wrap mt-5 sm:text-lg text-sm ">
                 <span className=' font-semibold'>
                     <FontAwesomeIcon icon={faSchool} className='mr-2' />
-                    Facultad 4
+                    {user?.facultad}
                 </span>
                 <span className=' font-semibold'>
                     <FontAwesomeIcon icon={faUserGraduate} className='mr-2' />
-                    Estudiante
+                    {user?.role}
                 </span>
                 <span className='font-semibold'>
                     <FontAwesomeIcon icon={faPhone} className='mr-2' />
@@ -27,7 +27,7 @@ const InfoUser = ({ user }) => {
                 </span>
                 <span className=' font-semibold text-zinc-400'>
                     <FontAwesomeIcon icon={faClock} className='mr-2' />
-                    Se unió {moment(user?.created_at).locale('es', localization).fromNow()}
+                    Se unió {moment(user?.created_at).locale('es', localization).subtract(4, 'hour').fromNow()}
                 </span>
             </div>
 

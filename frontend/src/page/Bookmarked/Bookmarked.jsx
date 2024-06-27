@@ -25,17 +25,22 @@ const Bookmarked = ({ setRefreshCheckLogin }) => {
     }, [])
 
     const moreData = () => {
-        const pageTemp = page + 1
-        setLoadingTweets(true)
-        getFeedApi(pageTemp).then(res => {
-            if (res === undefined || res?.tweets.length === 0) {
-                setLoadingTweets(0)
-            } else {
-                setTweets([...tweets, ...res?.tweets])
-                setPage(pageTemp)
-                setLoadingTweets(false)
-            }
-        })
+        if (loadingTweets !== 0) {
+            setLoadingTweets(true)
+            const pageTemp = page + 1
+            getMySavedTweetAPi(pageTemp).then(res => {
+                if (res === undefined || res?.tweets.length === 0) {
+                    setLoadingTweets(0)
+                } else {
+                    setTweets([...tweets, ...res?.tweets])
+                    setPage(pageTemp)
+                    setLoadingTweets(false)
+                }
+            })
+        } else {
+            setLoadingTweets(0)
+        }
+
     }
     return (
 

@@ -102,3 +102,18 @@ export async function getSearchApi(paramsUrl){
     return err
   })
 }
+
+export async function getPopularApi () {
+    const url = `${API_HOST}/profile/popular`
+    const params = {
+        headers:{
+            'Content-Type': 'application/json',
+                Authorization:`Bearer ${getTokenApi()}`
+        }
+    }
+    return await fetch(url, params).then(res => {
+        return res.json()
+    }).catch(err =>{
+        return err
+    })
+}

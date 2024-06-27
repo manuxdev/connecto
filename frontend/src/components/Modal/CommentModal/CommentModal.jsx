@@ -6,7 +6,6 @@ import { createCommentApi, getCommentTweetAPi } from '../../../api/comment'
 import CommentElement from '../../CommentElement/CommentElement'
 
 const CommentModal = ({ title, showModal, setShowModal, selectedTweet }) => {
-    console.log(selectedTweet)
     const [message, setMessage] = useState('')
     const maxLength = 100
     const [isLoading, setIsLoading] = useState(false);

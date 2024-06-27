@@ -79,6 +79,7 @@ const EditUserForm = ({ user, setShowModal }) => {
             toast.error('Error al actualizar datos', err)
         })
         setLoading(false)
+        toast.success('Usuario modificado')
         window.location.reload()
     }
     return (

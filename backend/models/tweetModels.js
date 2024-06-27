@@ -12,14 +12,14 @@ export class TweetModels {
     try {
       const offset = page * 15
       const tweets = await pool.query(`
-      SELECT t.*, u.user_id, u.username, u.email, u.first_name, u.last_name, u.avatar
+      SELECT t.*, u.user_id, u.username, u.email, u.first_name, u.last_name, u.avatar, u.role, u.facultad
       FROM tweets t
       LEFT JOIN users u ON t.user_id = u.user_id
       WHERE t.isreply = false AND t.user_id IN (
         SELECT following_id FROM followers WHERE follower_id = $1
       )
       UNION
-      SELECT t.*, u.user_id, u.username, u.email, u.first_name, u.last_name, u.avatar
+      SELECT t.*, u.user_id, u.username, u.email, u.first_name, u.last_name, u.avatar,  u.role, u.facultad
       FROM tweets t
       LEFT JOIN users u ON t.user_id = u.user_id
       WHERE t.user_id = $1
@@ -60,7 +60,7 @@ export class TweetModels {
 
     for (const bookmark of bookmarked) {
       const tweet = await pool.query(`
-         SELECT t.*, u.first_name, u.last_name, u.username, u.avatar
+         SELECT t.*, u.first_name, u.last_name, u.username, u.avatar, u.role, u.facultad
          FROM tweets t
          JOIN users u ON t.user_id = u.user_id
          WHERE t.tweet_id = $1;
@@ -91,7 +91,7 @@ export class TweetModels {
   static async gettweet (curruser, tweetId) {
     try {
       const tweet = await pool.query(`
-          SELECT t.*, u.user_id, u.username, u.first_name, u.last_name, u.avatar
+          SELECT t.*, u.user_id, u.username, u.first_name, u.last_name, u.avatar, u.role, u.facultad
           FROM tweets t
           JOIN users u ON u.user_id = t.user_id
           WHERE isreply = false AND  t.tweet_id = $1;
@@ -117,7 +117,7 @@ export class TweetModels {
   static async getComment (tweetId) {
     try {
       const comment = await pool.query(`
-            SELECT c.*, u.user_id, u.username, u.first_name, u.last_name, u.avatar
+            SELECT c.*, u.user_id, u.username, u.first_name, u.last_name, u.avatar, u.role, u.facultad
             FROM comments c
             JOIN users u ON u.user_id = c.user_id
             WHERE c.tweet_id = $1
@@ -216,7 +216,7 @@ export class TweetModels {
       const hashtag = hashtagResult.rows[0]
       if (!hashtag) { return { success: false, msg: 'Hashtag not found' } }
       const tweets = await pool.query(`
-      SELECT t.*, u.user_id, u.username, u.email, u.first_name, u.last_name, u.avatar
+      SELECT t.*, u.user_id, u.username, u.email, u.first_name, u.last_name, u.avatar, u.role, u.facultad
       FROM tweets t
       JOIN users u ON t.user_id = u.user_id
       WHERE t.isreply = false AND t.tweet_text LIKE '%' || $1 || '%'

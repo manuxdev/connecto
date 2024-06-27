@@ -12,8 +12,9 @@ import UserTweets from '../../components/User/UserTweets'
 import DropDown from '../../components/UI/DropDown'
 import { Spinner } from 'flowbite-react'
 import { getUserTweetAPi } from '../../api/tweet'
+import { logoutApi } from '../../api/auth'
 
-const User = ({ router }) => {
+const User = ({ router, setRefreshCheckLogin }) => {
     const [user, setUser] = useState(null)
     const [tweets, setTweets] = useState(null)
     const [isLoading, setIsLoading] = useState(false);
@@ -56,6 +57,7 @@ const User = ({ router }) => {
             }
         })
     }
+
     return (
         <BassicLayout>
             {isLoading ? (
@@ -65,7 +67,7 @@ const User = ({ router }) => {
                 <>
                     <div className='border-b border-[#585858b4] flex items-center justify-between relative '>
                         <h2 className='p-3 text-2xl font-bold'>{user ? `${userData.first_name} ${userData.last_name}` : 'El usuario no existe'} </h2>
-                        <DropDown />
+                        <DropDown setRefreshCheckLogin={setRefreshCheckLogin} />
                     </div>
                     <div>
                         <BannerAvatar user={userData} loggedUser={loggedUser.user} />

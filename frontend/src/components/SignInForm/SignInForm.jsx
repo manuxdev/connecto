@@ -29,6 +29,7 @@ const SignInForm = ({ setShowModal, setRefreshCheckLogin }) => {
                         toast.error(res.message)
                     } else {
                         setTokenApi(res.user.token)
+                        toast.success('Inicio de sesión satisfactorio.')
                         setRefreshCheckLogin(true)
                     }
                 }).catch(() => {

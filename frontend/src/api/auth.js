@@ -8,7 +8,9 @@ export async function signUpApi(user) {
         last_name: user.apellidos,
         username: user.username.toLowerCase(),
         password: user.password,
-        phonenumber: user.phoneNumber
+        phonenumber: user.phoneNumber,
+        role: user.role,
+        facultad: user.faculty
     }
     delete userTemp.repeatPassword
 

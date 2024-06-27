@@ -26,9 +26,9 @@ const RightMenu = () => {
                         {trending?.map((tread, index) => (
                             <div key={index} className='flex justify-between'>
                                 <Link to={`/search?page=0&search=%23${tread.hashtag}`}>
-                                    <h2>#{tread.hashtag}</h2>
+                                    <h2 className='text-blue-400 font-semibold'>#{tread.hashtag}</h2>
                                 </Link>
-                                <span>{tread.tweet_cnt}</span>
+                                <strong>{tread.tweet_cnt}</strong>
                             </div>
                         ))}
                     </div>

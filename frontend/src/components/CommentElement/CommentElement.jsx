@@ -2,9 +2,7 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import AvatarNotFOund from '../../assets/default.png';
 import { API_HOST } from '../../utils/constants';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClock } from '@fortawesome/free-solid-svg-icons';
-import moment from 'moment';
+
 import { replaceURLWithHTMLLinksAndTags } from '../../utils/function';
 const CommentElement = ({ comment }) => {
     const avatar = comment?.avatar ? `${API_HOST}/uploads${comment?.avatar}` : AvatarNotFOund;
@@ -18,9 +16,19 @@ const CommentElement = ({ comment }) => {
                     }
                 </Link>
                 <div className=''>
-                    <Link to={`/${comment?.username}`}>
-                        <span className='font-medium text-white' >@{comment?.username}</span>
-                    </Link>
+                    <div className='flex items-center'>
+                        <Link to={`/${comment?.username}`}>
+                            <span className='font-medium text-white' >@{comment?.username}</span>
+                        </Link>
+                        {comment?.role === 'Profesor' ?
+                            (<span className='bg-green-500 ml-1 block h-2 w-2 rounded-full'></span>)
+                            :
+                            (
+                                <span className=' bg-blue-500 ml-1 block h-2 w-2 rounded-full'></span>
+                            )
+                        }
+                    </div>
+
                     <div className='w-[200px]'>
                         <p dangerouslySetInnerHTML={{ __html: replaceURLWithHTMLLinksAndTags(comment?.comment) }}></p>
                     </div>

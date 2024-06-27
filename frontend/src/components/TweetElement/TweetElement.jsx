@@ -55,6 +55,14 @@ const TweetElement = ({ tweet }) => {
                         <span className='font-medium text-sm opacity-40 pr-3' >@{tweet?.username}</span>
                     </Link>
                     <span className='font-medium text-sm opacity-40'><FontAwesomeIcon icon={faClock} /> {moment(tweet?.created_at).subtract(4, 'hour').fromNow()}</span>
+                    {tweet?.role === 'Profesor' ?
+                        (<span className='font-medium text-sm bg-green-500 ml-2 px-1 rounded-lg'>{tweet?.role}</span>)
+                        :
+                        (
+                            <span className='font-medium text-sm bg-blue-500 ml-2 px-1 rounded-lg'>{tweet?.role}</span>
+                        )
+                    }
+
                 </div>
             </div>
             <Link to={`/pub/${tweet.tweet_id}`}>

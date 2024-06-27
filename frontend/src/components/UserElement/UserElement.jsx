@@ -10,7 +10,7 @@ const UserElement = ({ user }) => {
 
     const [follow, setFollow] = useState(null);
     const [reloadFollow, setReloadFollow] = useState(false);
-    const [isFollowDataLoaded, setIsFollowDataLoaded] = useState(false); // Nuevo estado para controlar la carga de datos
+    const [isFollowDataLoaded, setIsFollowDataLoaded] = useState(false);
 
     useEffect(() => {
         if (user) {
@@ -55,6 +55,13 @@ const UserElement = ({ user }) => {
                     <Link to={`/${user.username}`} className="hover:opacity-75 transition-all">
                         <span className='font-medium text-sm opacity-40 pr-3' >@{user?.username}</span>
                     </Link>
+                    {user?.role === 'Profesor' ?
+                        (<span className='font-medium text-sm bg-green-500 px-1 rounded-lg'>{user?.role}</span>)
+                        :
+                        (
+                            <span className='font-medium text-sm bg-blue-500 px-1 rounded-lg'>{user?.role}</span>
+                        )
+                    }
                 </div>
             </div>
             <div>

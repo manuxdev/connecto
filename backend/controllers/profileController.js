@@ -157,4 +157,16 @@ export class profileController {
       return res.status(500).json({ success: false, msg: err })
     }
   }
+
+  static async popular (req, res) {
+    try {
+      const num = req.query.num || 5
+      const user = req.user
+      const curruser = user[0]
+      const result = await profileModel.popular(num, curruser)
+      return res.status(200).json(result)
+    } catch (err) {
+      return res.status(500).json({ success: false, msg: `${err}` })
+    }
+  }
 }

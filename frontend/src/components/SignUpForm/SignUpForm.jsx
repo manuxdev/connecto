@@ -7,6 +7,8 @@ import { signUpApi, setTokenApi } from '../../api/auth'
 const SignUpForm = ({ setShowModal, setRefreshCheckLogin }) => {
     const [formData, setFormData] = useState(initialFormValue())
     const [signUpLoading, setSignUpLoading] = useState(false)
+    const [selectedRole, setSelectedRole] = useState('');
+    const [selectedFaculty, setSelectedFaculty] = useState('');
     const onSubmit = (e) => {
         e.preventDefault()
         // setShowModal(false)
@@ -26,6 +28,13 @@ const SignUpForm = ({ setShowModal, setRefreshCheckLogin }) => {
                 toast.warning('La contraseña debe tener minimo 8 caracteres 1 mayúscula y un signo')
             } else if (!validatePhoneNumber(formData.phoneNumber)) {
                 toast.warning('Teléfono incorrecto')
+
+            } else if ((formData.role === 'Escoge tu rol')) {
+                toast.warning('Escoge un rol')
+
+            } else if ((formData.faculty === 'Escoge tu Facultad')) {
+                toast.warning('Escoge una facultdad')
+
             } else {
                 signUpApi(formData).then(res => {
                     if (res.message) {
@@ -43,6 +52,15 @@ const SignUpForm = ({ setShowModal, setRefreshCheckLogin }) => {
                 setSignUpLoading(true)
             }
         }
+    }
+
+    const onChangeRole = (e) => {
+        setFormData({ ...formData, role: e.target.value })
+        setSelectedRole(e.target.value)
+    }
+    const onChangeFaculty = (e) => {
+        setFormData({ ...formData, faculty: e.target.value })
+        setSelectedFaculty(e.target.value)
     }
 
     return (
@@ -135,22 +153,27 @@ const SignUpForm = ({ setShowModal, setRefreshCheckLogin }) => {
                 <div className="flex gap-x-5">
                     <div className="relative z-0 w-full mb-5 group">
                         <label htmlFor="rol" className="block mb-2 text-sm font-medium ">Cual es tu rol?</label>
-                        <select id="rol" className=" mb-6 text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500">
-                            <option selected>Escoge tu rol</option>
-                            <option value="US">Estudiante</option>
-                            <option value="CA">Profesor</option>
+                        <select id="rol" value={selectedRole} className=" mb-6 text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+                            onChange={(e) => onChangeRole(e)}
+                        >
+                            <option defaultValue>Escoge tu rol</option>
+                            <option value="Estudiante">Estudiante</option>
+                            <option value="Profesor">Profesor</option>
                         </select>
                     </div>
                     <div className="relative z-0 w-full mb-5 group">
-                        <label htmlFor="rol" className="block mb-2 text-sm font-medium ">Cual es tu Facultad?</label>
-                        <select id="rol" className=" mb-6 text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500">
-                            <option selected>Escoge tu Facultad</option>
-                            <option value="US">Facultad 1</option>
-                            <option value="CA">Facultad 2</option>
-                            <option value="FR">Facultad 3</option>
-                            <option value="DE">Facultad 4</option>
-                            <option value="DE">FTE</option>
-                            <option value="DE">CITEC</option>
+                        <label htmlFor="facultad" className="block mb-2 text-sm font-medium ">Cual es tu Facultad?</label>
+                        <select id="facultad" className=" mb-6 text-sm rounded-lg  block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+                            value={selectedFaculty}
+                            onChange={(e) => onChangeFaculty(e)}
+                        >
+                            <option defaultValue>Escoge tu Facultad</option>
+                            <option value="Facultad 1">Facultad 1</option>
+                            <option value="Facultad 2">Facultad 2</option>
+                            <option value="Facultad 3">Facultad 3</option>
+                            <option value="Facultad 4">Facultad 4</option>
+                            <option value="FTE">FTE</option>
+                            <option value="CITEC">CITEC</option>
                         </select>
                     </div>
                 </div>
@@ -184,6 +207,8 @@ function initialFormValue() {
         phoneNumber: '',
         password: '',
         repeatPassword: '',
-        username: ''
+        username: '',
+        role: '',
+        faculty: ''
     }
 }

@@ -35,6 +35,7 @@ export class AuthController {
         return res.status(400).json({ errors: formattedErrors })
       }
       const userData = validationResult.data
+      console.log(userData)
       const user = await AuthModel.signup(userData)
       console.log(`User created successfully: ${JSON.stringify(user)}`)
       res.status(200).json({ success: true, msg: `Welcome to connecto, ${user.username}!`, user })

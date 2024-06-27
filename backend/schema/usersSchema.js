@@ -19,7 +19,9 @@ const userSchema = z.object({
     .max(40, { message: 'Last name must be less than  40 characters' }),
   description: z.string().max(150, { message: 'Last name must be less than  150 characters' }).optional(),
   phonenumber: z.string().optional().refine(value => value && /^\d{8}$/.test(value), { message: 'Phone number must be exactly  8 digits' }),
-  created_at: z.date().default(() => new Date())
+  created_at: z.date().default(() => new Date()),
+  role: z.string({ invalid_type_error: 'Role must bue a string', required_error: 'Role is required' }),
+  facultad: z.string({ invalid_type_error: 'Faculty must bue a string', required_error: 'Faculty is required' })
 })
 
 export function validateUser (object) {

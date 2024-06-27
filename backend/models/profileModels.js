@@ -10,7 +10,7 @@ export class profileModel {
   static async getProfileData (username, curruser) {
     try {
       // Buscar al usuario por nombre de usuario
-      const userResult = await pool.query('SELECT user_id, username, first_name, last_name, email, avatar, portada, created_at, description, phonenumber FROM users WHERE username = $1;', [username])
+      const userResult = await pool.query('SELECT user_id, username, first_name, last_name, email, avatar, portada, created_at, description, phonenumber, role, facultad FROM users WHERE username = $1;', [username])
       if (userResult.rowCount === 0) {
         throw new Error('User not found')
       }
@@ -43,7 +43,7 @@ export class profileModel {
 
   static async getLikedTweets (username) {
     try {
-      const userResult = await pool.query('SELECT user_id, username, first_name, last_name, email, avatar FROM users WHERE username = $1', [username])
+      const userResult = await pool.query('SELECT user_id, username, first_name, last_name, email, avatar, role, facultad FROM users WHERE username = $1', [username])
       if (userResult.rowCount === 0) {
         throw new Error('User not found')
       }
@@ -51,7 +51,7 @@ export class profileModel {
 
       // Consulta para obtener los tweets que el usuario ha "likeado"
       const likedTweetsResult = await pool.query(`
-        SELECT t.*, u.username, u.first_name, u.last_name, u.avatar
+        SELECT t.*, u.username, u.first_name, u.last_name, u.avatar, u.role, u.facultad
         FROM tweets t
         LEFT JOIN users u ON t.user_id = u.user_id
         WHERE EXISTS (
@@ -63,7 +63,7 @@ export class profileModel {
 
       // Consulta para obtener los tweets que el usuario ha marcado como favorito
       const bookmarkedTweetsResult = await pool.query(`
-        SELECT t.*, u.username, u.first_name, u.last_name, u.avatar
+        SELECT t.*, u.username, u.first_name, u.last_name, u.avatar, u.role, u.facultad
         FROM tweets t
         LEFT JOIN users u ON t.user_id = u.user_id
         WHERE EXISTS (
@@ -101,7 +101,7 @@ export class profileModel {
         if (startsWithAt) {
           // Si el texto comienza con '@', busca por username
           queryText = `
-          SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar
+          SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar, u.role, u.facultad
           FROM users u
           WHERE u.isSignedup = TRUE
           AND u.user_id NOT IN (
@@ -115,7 +115,7 @@ export class profileModel {
         } else {
           // Si no comienza con '@', busca por first_name y last_name
           queryText = `
-          SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar
+          SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar, u.role, u.facultad
           FROM users u
           WHERE u.isSignedup = TRUE
           AND u.user_id NOT IN (
@@ -131,7 +131,7 @@ export class profileModel {
         if (startsWithAt) {
           // Si el texto comienza con '@', busca por username
           queryText = `
-            SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar
+            SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar, u.role, u.facultad
             FROM users u
             JOIN followers f ON f.following_id = u.user_id
             WHERE u.isSignedup = TRUE
@@ -144,7 +144,7 @@ export class profileModel {
         } else {
           // Si no comienza con '@', busca por first_name y last_name
           queryText = `
-            SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar
+            SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar, u.role, u.facultad
             FROM users u
             JOIN followers f ON f.following_id = u.user_id
             WHERE u.isSignedup = TRUE
@@ -185,7 +185,7 @@ export class profileModel {
       if (text.startsWith('@')) {
         // Buscar usuarios
         queryText = `
-           SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar
+           SELECT u.user_id, u.username, u.first_name, u.last_name, u.avatar, u.role, u.facultad
            FROM users u
            WHERE u.isSignedup = TRUE
            AND u.username ILIKE $1
@@ -196,7 +196,7 @@ export class profileModel {
       } else {
         // Buscar tweets
         queryText = `
-           SELECT t.tweet_id, t.tweet_text, t.user_id, u.username, u.first_name, u.last_name, u.avatar
+           SELECT t.tweet_id, t.tweet_text, t.user_id, u.username, u.first_name, u.last_name, u.avatar, u.role, u.facultad
            FROM tweets t
            JOIN users u ON u.user_id = t.user_id
            WHERE t.tweet_text ILIKE $1
@@ -281,7 +281,7 @@ export class profileModel {
 
   static async follow (username, user) {
     try {
-      const followuser = await pool.query('SELECT user_id, username, first_name, last_name, email, avatar, description FROM users WHERE username = $1;', [username])
+      const followuser = await pool.query('SELECT user_id, username, first_name, last_name, email, avatar, description, role, facultad FROM users WHERE username = $1;', [username])
       const curruser = user[0]
       if (followuser.rowCount === 0) {
         console.log('User not found by that username.')
@@ -455,6 +455,42 @@ export class profileModel {
     } catch (error) {
       console.log('Error fetching feed:', error)
       throw error
+    }
+  }
+
+  static async popular (num, curruser) {
+    try {
+      const popular = await pool.query(`
+        SELECT 
+          u.username,
+          follower_counts.num_followers
+        FROM (
+          SELECT 
+            following_id AS user_id, 
+            COUNT(*) AS num_followers
+          FROM 
+            followers
+          WHERE 
+            following_id NOT IN (
+              SELECT following_id FROM followers WHERE follower_id = $1
+            ) AND
+            following_id <> $1
+          GROUP BY 
+            following_id
+          ORDER BY 
+            COUNT(*) DESC
+          LIMIT 5) AS follower_counts
+        JOIN 
+          users u ON u.user_id = follower_counts.user_id
+        WHERE 
+          u.user_id <> $1
+        ORDER BY 
+          follower_counts.num_followers DESC;
+      `, [curruser.user_id])
+      return { success: true, popular: popular.rows }
+    } catch (err) {
+      console.error(err)
+      throw err
     }
   }
 }
